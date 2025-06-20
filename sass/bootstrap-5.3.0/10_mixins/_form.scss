@@ -37,9 +37,11 @@
 /// @license
 /// GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
+$color-secondary: #00ff00 !default; // Fallback
+$color-primary: #ff0000 !default; // Fallback
 @mixin checkbox(
     $size: 16px,
-    $default-bg-color: $color-white,
+    $default-bg-color: $color-secondary,
     $default-border-color: $color-secondary,
     $default-icon: null,
     $active-bg-color: $color-primary,
@@ -133,11 +135,11 @@
 ///
 @mixin radio(
     $size: 16px,
-    $default-bg-color: $color-white,
-    $default-border-color: $color-secondary,
+    $default-bg-color: var(--bs-secondary),
+    $default-border-color: var(--bs-secondary),
     $default-icon: null,
-    $active-bg-color: $color-primary,
-    $active-border-color: $color-primary,
+    $active-bg-color: var(--bs-primary),
+    $active-border-color: var(--bs-primary),
     $active-icon: '../Images/input-radio-active.svg'
 ) {
     @include checkbox(

@@ -31,12 +31,12 @@
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 @mixin nav-block(
-    $link-color: $color-secondary,
-    $active-color: $color-primary
+    $link-color: var(--bs-secondary),
+    $active-color: var(--bs-primary)
 ) {
 
     &-list {
-        @include list-reset;
+        @include list-reset();
         display: block;
     }
 
@@ -94,11 +94,11 @@
 ///
 @mixin nav-inline(
     $list-gap: $spacer,
-    $link-color: $color-secondary,
-    $link-active-color: $color-primary
+    $link-color: var(--bs-secondary),
+    $link-active-color: var(--bs-primary)
 ) {
     &-list {
-        @include list-reset;
+        @include list-reset();
         display: flex;
         gap: rem-calc($list-gap);
     }
@@ -168,13 +168,13 @@
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
 @mixin nav-pulldown(
-    $pad-x: $spacer,
+    $pad-x: 16px,
     $pad-y: 0,
     $item-y: 10,
     $item-gap: 12,
-    $bg-color: $color-primary,
-    $text-color: $color-white,
-    $border-color: $color-white,
+    $bg-color: var(--bs-primary),
+    $text-color: var(--bs-secondary),
+    $border-color: var(--bs-secondary),
     $border-width: 1px
 ) {
 
@@ -187,7 +187,7 @@
     border: rem-calc($border-width) solid $border-color;
 
     &-list {
-        @include list-reset;
+        @include list-reset();
 
         &-item {
             @include copy;
@@ -244,7 +244,7 @@
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
 @mixin nav-toggle-group(
-    $gap: $spacer
+    $gap: 16px
 ) {
     display: flex;
     align-items: center;
@@ -289,11 +289,11 @@
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
 @mixin nav-toggle(
-    $icon-size: $spacer,
-    $icon-color: $color-primary,
+    $icon-size: 16px,
+    $icon-color: var(--bs-primary),
     $icon-mappings: (
-        "icon-hamburger": $icon-close,
-        "icon-plus": $icon-minus
+        "icon-hamburger": unquote('"\\e905"'),
+        "icon-plus": unquote('"\\e908"')
     )
 ) {
     background-color: transparent;

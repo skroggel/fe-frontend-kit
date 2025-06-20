@@ -76,6 +76,13 @@
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
 @mixin page-padding(
+    $page-padding: (
+        'sm': 16px,
+        'md': 24px,
+        'lg': 32px,
+        'xl': 48px,
+        'xxl': 60px
+    ),
     $page-wrap-class: '.page',
     $wrap-class: '.fullwidth',
     $default-padding: 16px

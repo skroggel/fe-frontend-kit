@@ -23,7 +23,7 @@
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin background-color-classes($map: $color-map) {
+@mixin background-color-classes($map) {
     @each $key, $value in $map {
         &-#{$key} {
             background-color: $value;
@@ -67,7 +67,7 @@
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin font-color-classes($map: $color-map) {
+@mixin font-color-classes($map) {
     @each $key, $value in $map {
         &-#{$key} {
             color: $value !important;

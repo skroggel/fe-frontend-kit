@@ -56,8 +56,37 @@
     $block-class: 'csp-block',
     $not-last-class: 'csp-not-last',
     $utility-append-class: 'sp',
-    $csp-blocks: $content-spacers-blocks,
-    $content-spacers: $content-spacers
+    $csp-blocks: (
+        'text',
+        'text-image',
+        'text-video'
+    ),
+    $content-spacers: (
+        'xs': (
+            'section': 48px, // space between different sections
+            'block': 16px    // space between content blocks
+        ),
+        'sm': (
+            'section': 48px,
+            'block': 16px
+        ),
+        'md': (
+            'section': 48px,
+            'block': 16px
+        ),
+        'lg': (
+            'section': 48px,
+            'block': 16px
+        ),
+        'xl': (
+            'section': 48px,
+            'block': 16px
+        ),
+        'xxl': (
+            'section': 48px,
+            'block': 16px
+        )
+    ),
 ) {
     @each $breakpoint, $values in $grid-breakpoints {
         $spacer-section: map-get(map-get($content-spacers, $breakpoint), 'section');

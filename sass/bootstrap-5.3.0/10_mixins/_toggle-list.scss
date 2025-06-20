@@ -56,15 +56,15 @@
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
 @mixin toggle-list(
-    $padding-y: $spacer,
-    $border-color: $color-primary,
+    $padding-y: 16px,
+    $border-color: var(--bs-primary),
     $border-size: 1px,
-    $font-color: $color-secondary,
-    $font-color-active: $color-primary,
+    $font-color: var(--bs-secondary),
+    $font-color-active: var(--bs-primary),
     $icon-size: 30px,
-    $icon-style: $icon-arrow-right
+    $icon-style: ''
 ) {
-    @include list-reset;
+    @include list-reset();
     display: flex;
     flex-direction: column;
 
@@ -128,6 +128,4 @@
             }
         }
     }
-
-
 }
