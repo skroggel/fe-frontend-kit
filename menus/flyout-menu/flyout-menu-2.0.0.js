@@ -25,7 +25,7 @@
  * const menuTrigger = document.querySelector('.js-flyout-toggle');
  * const flyoutMenu = new Madj2kFlyoutMenu(menuTrigger, {
  *   animationDuration: 300,
- *   fullHeight: true
+ *   heightMode: 'maxContent'
  * });
  */
 
@@ -49,7 +49,7 @@ class Madj2kFlyoutMenu {
       menuCloseClass: "js-flyout-close",
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
-      fullHeight: true,
+      heightMode: 'maxContent',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
       animationDuration: 500
@@ -245,12 +245,19 @@ class Madj2kFlyoutMenu {
     const flyoutTop = refPos.top + refObj.offsetHeight;
     let height = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
 
-    if (this.settings.fullHeight) {
-      height = window.innerHeight - refPos.top - refObj.offsetHeight;
-    }
-
     this.settings.$menu.style.top = `${flyoutTop}px`;
-    this.settings.$menu.style.height = `${height}px`;
+
+    // deprecated fullHeight-setting as fallback
+    if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
+      height = window.innerHeight - refPos.top - refObj.offsetHeight;
+      this.settings.$menu.style.height = `${height}px`;
+
+    } else if (this.settings.heightMode === 'maxContent'){
+      this.settings.$menu.style.height = `max-content`;
+
+    } else {
+      this.settings.$menu.style.height = `${height}px`;
+    }
   }
 
   /**
