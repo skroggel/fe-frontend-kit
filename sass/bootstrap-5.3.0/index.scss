@@ -1,20 +1,16 @@
-@use "bootstrap/scss/functions";
-@use "bootstrap/scss/variables";
-@use "bootstrap/scss/mixins";
+@import '00_variables/colors';
+@import '00_variables/font';
+@import '00_variables/maps';
 
-@forward '00_mixins/accessibility';
-@forward '00_mixins/colors';
-@forward '00_mixins/effects';
-@forward '00_mixins/flex-box';
-@forward '00_mixins/form';
-@forward '00_mixins/format';
-@forward '00_mixins/icons';
-@forward '00_mixins/nav';
-@forward '00_mixins/page';
-@forward '00_mixins/section';
-@forward '00_mixins/toggle-list';
-@forward '00_mixins/unit';
-
-@forward '10_config/colors';
-@forward '10_config/font';
-@forward '10_config/maps';
+@import '10_mixins/accessibility';
+@import '10_mixins/colors';
+@import '10_mixins/effects';
+@import '10_mixins/flex-box';
+@import '10_mixins/form';
+@import '10_mixins/format';
+@import '10_mixins/icons';
+@import '10_mixins/nav';
+@import '10_mixins/page';
+@import '10_mixins/section';
+@import '10_mixins/toggle-list';
+@import '10_mixins/unit';

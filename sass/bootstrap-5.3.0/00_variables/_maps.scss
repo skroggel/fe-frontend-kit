@@ -1,0 +1,56 @@
+/* ==================================================
+* Basic maps
+* ================================================== */
+@use 'sass:math';
+
+$spacer : 1rem !default;
+$spacers: (
+    0: 0,
+    1: $spacer * .25,
+    2: $spacer * .5,
+    3: $spacer,
+    4: $spacer * 1.5,
+    5: $spacer * 3,
+) !default;
+
+$page-padding: (
+    xs: $spacer,
+    sm: $spacer, // mobile
+    md: $spacer,
+    lg: $spacer, // tablet
+    xl: $spacer,
+    xxl: $spacer,
+) !default;
+
+$content-spacers-blocks: (
+    'text',
+    'text-image',
+    'text-video'
+) !default;
+
+$content-spacers: (
+    'xs': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+    'sm': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+    'md': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+    'lg': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+    'xl': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+    'xxl': (
+        'section': map-get($spacers, 5), // space between different sections
+        'block': map-get($spacers, 3), // space between content blocks
+    ),
+) !default;
