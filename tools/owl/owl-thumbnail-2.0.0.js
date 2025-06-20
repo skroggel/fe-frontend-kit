@@ -1,6 +1,19 @@
 /**!
  * Owl with thumbnails (requires jQuery and OWL Carousel)
  *
+ * A JavaScript helper class to create a main OWL carousel with a synchronized thumbnail navigation carousel.
+ *
+ * Supports flexible configurations for both the main and the thumbnail carousels,
+ * including:
+ * - Custom navigation
+ * - Syncing main carousel to clicked thumbnails
+ * - Syncing thumbnails to main carousel changes
+ * - Optionally equalizing thumbnail heights
+ * - Optionally preventing the centered thumbnail stage shift (for designs where thumbs should stay left aligned)
+ * - Responsive and CMS-friendly (works with dynamic content)
+ *
+ * This is especially useful for image galleries or product carousels in CMS setups (e.g. TYPO3, WordPress, etc.)
+ * where content may change dynamically.
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel

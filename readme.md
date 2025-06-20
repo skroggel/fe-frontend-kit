@@ -9,9 +9,10 @@ Requirements:
 For SCSS mixins: Bootstrap SCSS (your project needs to install bootstrap and include it in the build)
 For menu components: none
 
-## Folder-Structure
-* sass:	SCSS mixins (using Bootstrap 5.3 functions/mixins)
-* menus: Separate menu components (JS + SCSS), Bootstrap-independent
+## Contains
+* SASS mixins (using Bootstrap 5.3 functions/mixins)
+* Menu components (JS + SCSS), Bootstrap-independent
+* Several JS-Tools
 
 ##  Usage in your project
 ###  SCSS Mixins
@@ -24,6 +25,38 @@ Or import individual mixins:
 ```
 ###  Menu components (JS and SCSS):
 Each menu component can be used separately.
+
+# JS: Resize-End
+A lightweight helper class that triggers a debounced 'madj2k-resize-end' event
+when the user finishes resizing the browser window.
+
+It also manages a scrolling detection state (via body attribute) to avoid triggering
+resize-end during user scrolling, and respects active input fields (useful on mobile).
+
+# JS: Scrolling
+A lightweight scrolling helper class that enables:
+1. Body classes based on scroll direction (scroll-up / scroll-down)
+2. Smooth anchor scrolling with optional offset
+3. Automatic scrolling when collapsible elements (like Bootstrap .collapse) open
+4. Appear-on-scroll animations for elements
+
+The class is fully configurable via options and is designed to be used in CMS contexts
+where elements can be added, removed or re-ordered dynamically.
+
+# JS: OWL-Thumbnails
+A JavaScript helper class to create a main OWL carousel with a synchronized thumbnail navigation carousel.
+
+Supports flexible configurations for both the main and the thumbnail carousels,
+including:
+- Custom navigation
+- Syncing main carousel to clicked thumbnails
+- Syncing thumbnails to main carousel changes
+- Optionally equalizing thumbnail heights
+- Optionally preventing the centered thumbnail stage shift (for designs where thumbs should stay left aligned)
+- Responsive and CMS-friendly (works with dynamic content)
+
+This is especially useful for image galleries or product carousels in CMS setups (e.g. TYPO3, WordPress, etc.)
+where content may change dynamically.
 
 # Flyout-Navigation
 ## Usage

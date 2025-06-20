@@ -1,12 +1,6 @@
 /**
  * Scrolling-Events (Vanilla JS)
  *
- * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
- * @license GNU General Public License v3.0
- * @see https://www.gnu.org/licenses/gpl-3.0.en.html
- *
  * A lightweight scrolling helper class that enables:
  * 1. Body classes based on scroll direction (scroll-up / scroll-down)
  * 2. Smooth anchor scrolling with optional offset
@@ -15,6 +9,12 @@
  *
  * The class is fully configurable via options and is designed to be used in CMS contexts
  * where elements can be added, removed or re-ordered dynamically.
+ *
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright 2025 Steffen Kroggel
+ * @version 2.0.0
+ * @license GNU General Public License v3.0
+ * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example
  * // Initialize with defaults
