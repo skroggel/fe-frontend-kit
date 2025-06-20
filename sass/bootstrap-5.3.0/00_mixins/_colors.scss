@@ -1,0 +1,99 @@
+/// Generates utility classes for background colors based on a Sass map.
+///
+/// For each key–value pair in the provided map, a class with a suffix of `-<key>`
+/// is created, setting `background-color` to the mapped value.
+///
+/// Typically used in component systems or design tokens to expose theme colors.
+///
+/// @group Utilities
+///
+/// @param {Map} $map - A Sass map of color names and values (e.g. `("primary": #005fcc, "secondary": #999)`). Defaults to `$color-map`.
+///
+/// @example scss
+///   @include background-color-classes((
+///     "primary": #005fcc,
+///     "secondary": #999,
+///     "light": #f5f5f5
+///   ));
+///
+/// @example css
+///   .bg-primary { background-color: #005fcc; }
+///   .bg-secondary { background-color: #999; }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin background-color-classes($map: $color-map) {
+    @each $key, $value in $map {
+        &-#{$key} {
+            background-color: $value;
+        }
+
+        @each $breakpoint, $size in $grid-breakpoints {
+            @media (min-width: $size) {
+                &-#{$breakpoint}-#{$key} {
+                    background-color: $value;
+                }
+
+                &-#{$breakpoint}-none {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+}
+
+/// Generates utility classes for text color based on a Sass map.
+///
+/// For each key–value pair in the provided map, a class with a suffix of `-<key>`
+/// is created, setting the `color` of the element and its immediate children to the mapped value.
+///
+/// Adds `!important` to ensure style application even when overridden.
+///
+/// @group Utilities
+///
+/// @param {Map} $map - A Sass map of color names and values. Defaults to `$color-map`.
+///
+/// @example scss
+///   @include font-color-classes((
+///     "danger": #e00,
+///     "success": #0a0
+///   ));
+///
+/// @example css
+///   .text-danger { color: #e00 !important; }
+///   .text-danger > * { color: #e00 !important; }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin font-color-classes($map: $color-map) {
+    @each $key, $value in $map {
+        &-#{$key} {
+            color: $value !important;
+
+            & > * {
+                color: $value !important;
+            }
+        }
+        @each $breakpoint, $size in $grid-breakpoints {
+            @media (min-width: $size) {
+                &-#{$breakpoint}-#{$key} {
+                    color: $value !important;
+
+                    & > * {
+                        color: $value !important;
+                    }
+                }
+
+                &-#{$breakpoint}-none {
+                    color: inherit !important;
+
+                    & > * {
+                        color: inherit !important;
+                    }
+                }
+            }
+        }
+    }
+}

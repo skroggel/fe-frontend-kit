@@ -1,0 +1,23 @@
+# Version 1.0.1
+# =======================================================
+# Ignore editor-files, vendor and other basic stuff
+# =======================================================
+.DS_Store
+.build
+node_modules
+bower_components
+vendor
+
+/.buildpath
+/.bowerrc
+/.bundle
+/.env
+/.idea
+/.project
+/.php-version
+/.phpunit.result.cache
+/.settings
+
+# =======================================================
+# Add custom stuff here
+# =======================================================

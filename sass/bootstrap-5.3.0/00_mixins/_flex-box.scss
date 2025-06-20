@@ -1,0 +1,104 @@
+/// Calculates `flex-basis` for a given number of columns while accounting for CSS `gap`.
+///
+/// This mixin ensures that items within a flex container evenly divide available width,
+/// **including** the horizontal `gap` spacing between them.
+/// Ideal for grid-like layouts using `display: flex` and `gap`.
+///
+/// Based on: https://stackoverflow.com/questions/72116170/account-for-gap-when-calculating-flex-basis
+///
+/// @group Layout
+///
+/// @param {Number} $cols - Number of columns (flex items per row). Default: `2`.
+/// @param {Length} $gap - Horizontal gap between items. Default: `16px`.
+/// @return {Declaration} - Sets `flex-basis` using a `calc()` formula.
+///
+/// @example scss
+///   .grid-item {
+///     @include flex-basis(3, 24px);
+///   }
+///
+/// @example css
+///   flex-basis: calc(100% / 3 - 24px / 3 * (3 - 1));
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin flex-basis($cols: 2, $gap: 16px) {
+    flex-basis: calc(100% / #{$cols} - #{$gap} / #{$cols} * (#{$cols} - 1));
+}
+
+
+/// Flexbox Item Width Generator
+///
+/// Dynamically generates responsive flex item widths based on the number
+/// of items in a container and a column-count configuration map.
+///
+/// This mixin assumes that item widths are calculated using a helper mixin
+/// like `@include flex-basis($columns, $gap)` which distributes space based
+/// on a total column count per row, adjusted for a given gap.
+///
+/// @param {Map} $config - A map where:
+///   - Keys are the total number of items in a row (e.g., 4, 5, 6)
+///   - Values are either:
+///     - A single number: the number of columns for that layout
+///     - A map of item index ranges (e.g., `'1-3'`, `'4-5'`) where each
+///       range defines how many columns those items span in that row
+///
+/// @param {Length} $gap - Optional spacing between columns (default: `0`)
+///
+/// @param {String} $counterClassPrefix - The base class prefix for the container,
+///     e.g. '.items' or '.grid--cols' (default: '.items').
+///
+/// @param {String} $className - The selector for each item (default: '.item')
+///
+/// @example scss - Uniform layout
+///   $layout: (
+///     4: 2, // All 4 items arranged in 2 columns (2 per row)
+///     6: 3  // All 6 items in 3 columns
+///   );
+///
+/// @example scss - Mixed layout with row-specific splits
+///   $layout: (
+///     5: (
+///       '1-3': 3, // First row: 3 columns (items 1–3)
+///       '4-5': 2  // Second row: 2 columns (items 4–5)
+///     )
+///   );
+///
+/// @output
+///   Generates selectors like `.items-5 .item:nth-child(...)` with flex-basis
+///   calculated using the number of columns and the provided gap.
+///
+/// @note
+///   This mixin requires a `flex-basis($columns, $gap)` helper mixin or function
+///   that performs the actual width calculation (e.g., using `calc(...)`)
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin flex-basis-dynamically($config, $gap: 0, $counterClassPrefix: '.count', $className: '.item') {
+    @each $count, $value in $config {
+        @if type-of($value) == "map" {
+            @each $range, $columns in $value {
+                $start: null;
+                $end: null;
+
+                @if str-index($range, '-') != null {
+                    $start: str-slice($range, 1, str-index($range, '-') - 1);
+                    $end: str-slice($range, str-index($range, '-') + 1);
+                } @else {
+                    $start: $range;
+                    $end: $range;
+                }
+
+                #{$counterClassPrefix}-#{$count} #{$className}:nth-child(n+#{$start}):nth-child(-n+#{$end}) {
+                    @include flex-basis($columns, $gap);
+                }
+            }
+        } @else {
+            #{$counterClassPrefix}-#{$count} #{$className} {
+                @include flex-basis($value, $gap);
+            }
+        }
+    }
+}

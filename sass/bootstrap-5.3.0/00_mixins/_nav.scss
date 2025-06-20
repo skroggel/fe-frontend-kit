@@ -1,0 +1,327 @@
+/* ==================================================
+ * Nav-block
+ * ==================================================*/
+/// Creates a vertically stacked navigation menu with consistent styling.
+///
+/// Features configurable link colors for default and active states.
+/// Links are left-aligned with optional underline on hover.
+///
+/// @group Navigation
+///
+/// @param {Color} $link-color - The color of the default (non-active) links. Defaults to `$color-secondary`.
+/// @param {Color} $active-color - The color of active links. Defaults to `$color-primary`.
+///
+/// @example html
+///   <nav class="nav-block">
+///     <ul class="nav-block-list">
+///       <li class="nav-block-item">
+///         <a href="#" class="nav-block-link">Link 1</a>
+///       </li>
+///       <li class="nav-block-item">
+///         <a href="#" class="nav-block-link active">Link 2</a>
+///       </li>
+///     </ul>
+///   </nav>
+///
+/// @example scss
+///   .nav-block {
+///     @include nav-block($link-color: #888, $active-color: #000);
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+@mixin nav-block(
+    $link-color: $color-secondary,
+    $active-color: $color-primary
+) {
+
+    &-list {
+        @include list-reset;
+        display: block;
+    }
+
+    &-link,
+    &-link:link,
+    &-link:visited,
+    &-link:hover {
+        color: $link-color;
+        text-decoration: none;
+        text-align: left;
+
+        &.active {
+            color: $active-color;
+        }
+    }
+
+    &-link:hover {
+        text-decoration: underline;
+    }
+}
+
+/* ==================================================
+ * Nav-Inline
+ * ==================================================*/
+/// Creates a horizontally aligned navigation using a flexbox layout.
+///
+/// Navigation items are displayed in a row with configurable spacing.
+/// Links can have different styles for default and active states.
+///
+/// @group Navigation
+///
+/// @param {Length} $list-gap - The horizontal spacing (gap) between navigation items. Defaults to `$spacer`.
+/// @param {Color} $link-color - The text color of default (inactive) links. Defaults to `$color-secondary`.
+/// @param {Color} $link-active-color - The text color of active links. Defaults to `$color-primary`.
+///
+/// @example html
+///   <nav class="nav-inline">
+///     <ul class="nav-inline-list">
+///       <li class="nav-inline-item">
+///         <a class="nav-inline-link" href="#">Link</a>
+///       </li>
+///       <li class="nav-inline-item">
+///         <a class="nav-inline-link active" href="#">Active Link</a>
+///       </li>
+///     </ul>
+///   </nav>
+///
+/// @example scss
+///   .nav-inline {
+///     @include nav-inline($list-gap: 1rem, $link-color: #666, $link-active-color: #000);
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin nav-inline(
+    $list-gap: $spacer,
+    $link-color: $color-secondary,
+    $link-active-color: $color-primary
+) {
+    &-list {
+        @include list-reset;
+        display: flex;
+        gap: rem-calc($list-gap);
+    }
+
+    &-link,
+    &-link:link,
+    &-link:visited,
+    &-link:hover {
+        color: $link-color;
+        text-decoration: none;
+        text-align: left;
+
+        &.active {
+            color: $link-active-color;
+        }
+    }
+
+    &-link:hover {
+        text-decoration: underline;
+    }
+}
+
+/* ==================================================
+* Nav-Pulldown
+* ==================================================*/
+/// Creates a dropdown navigation menu that appears below its trigger element.
+///
+/// Features configurable padding, spacing, colors and borders.
+/// The menu is positioned relative to its container and
+/// extends to fit its content width.
+///
+/// @group Navigation
+///
+/// @param {Length} $pad-x - Horizontal padding inside the dropdown container. Defaults to `$spacer`.
+/// @param {Length} $pad-y - Vertical padding inside the dropdown container. Defaults to `0`.
+/// @param {Length} $item-y - Vertical spacing between dropdown items. Defaults to `10`.
+/// @param {Length} $item-gap - Horizontal spacing between content inside items. Defaults to `12`.
+/// @param {Color} $bg-color - Background color of the dropdown. Defaults to `$color-primary`.
+/// @param {Color} $text-color - Text color of the links. Defaults to `$color-white`.
+/// @param {Color} $border-color - Border color of the dropdown container. Defaults to `$color-white`.
+/// @param {Length} $border-width - Border width of the dropdown container. Defaults to `1px`.
+///
+/// @example html
+///   <div class="nav-pulldown">
+///     <ul class="nav-pulldown-list">
+///       <li class="nav-pulldown-list-item">
+///         <a href="#" class="nav-pulldown-link">Link</a>
+///       </li>
+///     </ul>
+///   </div>
+///
+/// @example scss
+///   .nav-pulldown {
+///     @include nav-pulldown(
+///       $pad-x: 1rem,
+///       $pad-y: 0.5rem,
+///       $item-y: 0.75rem,
+///       $item-gap: 1rem,
+///       $bg-color: #333,
+///       $text-color: #fff,
+///       $border-color: #ccc,
+///       $border-width: 2px
+///     );
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin nav-pulldown(
+    $pad-x: $spacer,
+    $pad-y: 0,
+    $item-y: 10,
+    $item-gap: 12,
+    $bg-color: $color-primary,
+    $text-color: $color-white,
+    $border-color: $color-white,
+    $border-width: 1px
+) {
+
+    top: 100%;
+    right: rem-calc(($border-width * 2) * -1); // compensation for border
+    width: max-content;
+
+    padding: rem-calc($pad-y) rem-calc($pad-x);
+    background-color: $bg-color;
+    border: rem-calc($border-width) solid $border-color;
+
+    &-list {
+        @include list-reset;
+
+        &-item {
+            @include copy;
+            color: $text-color;
+            text-align: left;
+            margin-top: rem-calc($item-y);
+            margin-bottom: rem-calc($item-y);
+
+            & + & {
+                margin-top: rem-calc($item-gap);
+            }
+        }
+    }
+
+    &-link,
+    &-link:link,
+    &-link:visited,
+    &-link:hover {
+        color: $text-color;
+        text-decoration: none;
+    }
+
+    &-link {
+        text-decoration: underline;
+
+    }
+}
+
+/* ==================================================
+* Nav-Toggle
+* ==================================================*/
+/// Creates a button group container for navigation toggles.
+///
+/// Used to align toggle buttons and icons horizontally with spacing.
+/// Useful in responsive navigation headers.
+///
+/// @group Navigation
+///
+/// @param {Length} $gap - The spacing between toggle elements. Defaults to `$spacer`.
+///
+/// @example html
+///   <div class="nav-toggle-group">
+///     <button class="nav-toggle" aria-expanded="false">
+///       <i class="nav-toggle-icon icon-hamburger"></i>
+///     </button>
+///   </div>
+///
+/// @example scss
+///   .nav-toggle-group {
+///     @include nav-toggle-group($gap: 1rem);
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin nav-toggle-group(
+    $gap: $spacer
+) {
+    display: flex;
+    align-items: center;
+    gap: rem-calc($gap);
+    height: 100%;
+}
+
+
+/// Creates a button element for toggling navigation menus.
+///
+/// Features:
+/// - Accessible button with `aria-expanded` state
+/// - Icon switching based on toggle state (e.g., hamburger to close)
+/// - Configurable icon size and colors
+/// - No default background or borders for flexible styling
+/// - Built-in accessibility outline
+///
+/// @group Navigation
+///
+/// @param {Length} $icon-size - Size of the icon (width/height). Defaults to `$spacer`.
+/// @param {Color} $icon-color - Icon color (e.g., fill or text color). Defaults to `$color-primary`.
+/// @param {Map} $icon-mappings - Map of icon toggle states (e.g., hamburger → close). Defaults to a predefined map.
+///
+/// @example html
+///   <button class="nav-toggle" aria-expanded="false">
+///     <i class="nav-toggle-icon icon-hamburger"></i>
+///   </button>
+///
+/// @example scss
+///   .nav-toggle {
+///     @include nav-toggle(
+///       $icon-size: 1.5rem,
+///       $icon-color: #333,
+///       $icon-mappings: (
+///         "icon-hamburger": "icon-close",
+///         "icon-plus": "icon-minus"
+///       )
+///     );
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin nav-toggle(
+    $icon-size: $spacer,
+    $icon-color: $color-primary,
+    $icon-mappings: (
+        "icon-hamburger": $icon-close,
+        "icon-plus": $icon-minus
+    )
+) {
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+
+    // accessibility
+    @include accessibility-outline();
+
+    &:has(.nav-toggle-icon) {
+        display: flex;
+        align-items: center;
+
+        &[aria-expanded="true"] {
+            @each $icon-class, $content in $icon-mappings {
+                .#{$icon-class} {
+                    &:before {
+                        content: $content;
+                    }
+                }
+            }
+        }
+    }
+
+    &-icon {
+        font-size: rem-calc($icon-size);
+        width: rem-calc($icon-size);
+        color: $icon-color;
+    }
+}

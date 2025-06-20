@@ -1,0 +1,133 @@
+/* ==================================================
+* Toggle-list
+* ==================================================*/
+/// Creates a vertically stacked list with toggleable items.
+///
+/// Can be used for accordion-like navigation or collapsible sections.
+/// Supports both semantic HTML lists and custom div-based structures.
+///
+/// Features:
+/// - Custom padding and border styling
+/// - Different font colors for default and active states
+/// - Icon support via inline `<span>` or pseudo-element (`::after`)
+///
+/// @group Navigation
+///
+/// @param {Length} $padding-y - Vertical padding for list items. Defaults to `$spacer`.
+/// @param {Color} $border-color - Color of the item borders. Defaults to `$color-primary`.
+/// @param {Length} $border-size - Thickness of the bottom border. Defaults to `1px`.
+/// @param {Color} $font-color - Default font color for links. Defaults to `$color-secondary`.
+/// @param {Color} $font-color-active - Font color for active items. Defaults to `$color-primary`.
+/// @param {Length} $icon-size - Size of the icon element or pseudo-element. Defaults to `30px`.
+/// @param {String} $icon-style - Icon identifier or class (e.g., arrow icon). Defaults to `$icon-arrow-right`.
+///
+/// @example html
+///   <!-- With icon span -->
+///   <div class="toggle-list">
+///     <div class="toggle-list-item">
+///       <div class="toggle-list-link">
+///         <span>Toggle Item</span>
+///         <span class="icon"></span>
+///       </div>
+///     </div>
+///   </div>
+///
+/// @example html
+///   <!-- With ::after icon when used via WYSIWYG editor -->
+///   <ul class="toggle-list">
+///     <li>
+///       <a href="#">
+///         Toggle Item
+///       </a>
+///     </li>
+///   </ul>
+///
+/// @example scss
+///   .toggle-list {
+///     @include toggle-list(
+///       $padding-y: 1rem,
+///       $border-color: #ccc,
+///       $font-color-active: #000,
+///       $icon-size: 1.25rem
+///     );
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin toggle-list(
+    $padding-y: $spacer,
+    $border-color: $color-primary,
+    $border-size: 1px,
+    $font-color: $color-secondary,
+    $font-color-active: $color-primary,
+    $icon-size: 30px,
+    $icon-style: $icon-arrow-right
+) {
+    @include list-reset;
+    display: flex;
+    flex-direction: column;
+
+    &-item {
+        border-bottom: rem-calc($border-size) solid $border-color;
+        margin: 0;
+        padding: rem-calc($padding-y) 0;
+    }
+
+    &-link {
+        color: $font-color;
+        text-align: left;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-decoration: none;
+        width: 100%;
+
+        &:link,
+        &:visited,
+        &:hover {
+            text-decoration: none !important;
+        }
+
+        .icon {
+            font-size: rem-calc($icon-size);
+            color: $font-color;
+        }
+
+        &:hover,
+        &.active,
+        &[aria-expanded="true"] {
+            color: $font-color-active;
+
+            &::after {
+                color: $font-color-active;
+            }
+
+            .icon {
+                color: $font-color-active;
+            }
+        }
+
+    }
+
+    & > li {
+        @extend .toggle-list-item;
+
+        // editor adds span elements
+        & > span > a,
+        & > span > .link,
+        & > a,
+        & > .link {
+            @extend .toggle-list-link;
+
+            &::after {
+                @extend .icomoon;
+                font-size: rem-calc($icon-size);
+                content: $icon-style;
+            }
+        }
+    }
+
+
+}

@@ -1,0 +1,42 @@
+/* ==================================================
+* Accessibility
+* ================================================== */
+/// Adds a visible and accessible focus outline for interactive elements.
+///
+/// Ensures that keyboard users can visually identify focused elements
+/// (e.g., buttons, links, inputs) with a strong outline for accessibility.
+/// This mixin is meant to be used on elements that need clear focus styles
+/// without relying on default browser outlines.
+///
+/// @group Accessibility
+///
+/// @param {Color} $color - Outline color for focused state. Defaults to `$color-outline`.
+/// @param {Length} $width - Outline width. Defaults to `3px`.
+///
+/// @example scss
+///   button,
+///   a {
+///     @include accessibility-outline();
+///   }
+///
+/// @example scss
+///   .custom-button {
+///     @include accessibility-outline($color: #005fcc, $width: 2px);
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin accessibility-outline ($color: $color-outline, $width: 3px) {
+
+    &:focus,
+    &:focus-within {
+        outline: 0;
+    }
+
+    &:has(input:focus-visible),
+    &:focus-visible {
+        outline: rem-calc($width) solid $color;
+    }
+
+}

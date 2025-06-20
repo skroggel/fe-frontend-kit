@@ -1,0 +1,261 @@
+/**! ==================================================
+ * Mixin page padding
+ * ================================================== */
+@use 'sass:math';
+
+/// Adds utility classes for enabling full-width containers with responsive page paddings.
+///
+/// This mixin generates classes that allow a container to break out of the standard Bootstrap layout
+/// while maintaining the grid system and applying consistent horizontal paddings based on breakpoints.
+///
+/// The generated utility classes follow this logic:
+/// - `fullwidth-{breakpoint}-{value}`
+/// - `fullwidth-{value}`
+///
+/// Possible values:
+/// - `0` disables full-width behavior (default layout)
+/// - `1` enables full-width behavior (stretched content with padding)
+///
+/// Use cases include:
+/// - Wrapping containers
+/// - Creating full-width sections inside grid columns
+/// - Layered structures for positioning background images or additional layout control
+///
+/// @group Layout
+///
+/// @param {String} $page-wrap-class - The base class used to wrap the entire page (for context-aware styling). Defaults to `'.page'`.
+/// @param {String} $wrap-class - The base utility class prefix for full-width behavior. Defaults to `'.fullwidth'`.
+/// @param {Length} $default-padding - The default horizontal padding applied when full-width is active. Defaults to `16px`.
+///
+/// @example html
+///   <!-- 1) Around a Bootstrap container -->
+///   <div class="fullwidth-1 fullwidth-md-0 fullwidth-xl-1">
+///     <div class="container-xxl">
+///       [...]
+///     </div>
+///   </div>
+///
+/// @example html
+///   <!-- 1.1) With inner fullwidth container (e.g. for background images) -->
+///   <div class="fullwidth-1 fullwidth-md-0 fullwidth-xl-1">
+///     <div class="fullwidth-inner">
+///       <img src="..." alt="">
+///     </div>
+///     <div class="container-xxl">
+///       [...]
+///     </div>
+///   </div>
+///
+/// @example html
+///   <!-- 1.2) Inside a positioned element with padding wrapper -->
+///   <div class="fullwidth-1 fullwidth-md-0 fullwidth-xl-1">
+///     <div class="fullwidth-inner position-relative">
+///       <div class="position-absolute">
+///         <div class="fullwidth-padding">
+///           <div class="container-xxl">
+///             [...]
+///           </div>
+///         </div>
+///       </div>
+///     </div>
+///   </div>
+///
+/// @example html
+///   <!-- 2) Inside a column (e.g. col-12) -->
+///   <div class="container-xxl">
+///     <div class="row">
+///       <div class="col-12 col-lg-7 order-lg-3">
+///         <div class="fullwidth-1 fullwidth-md-0 fullwidth-xl-1">
+///           [...]
+///         </div>
+///       </div>
+///     </div>
+///   </div>
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin page-padding(
+    $page-wrap-class: '.page',
+    $wrap-class: '.fullwidth',
+    $default-padding: 16px
+) {
+
+    #{$page-wrap-class} {
+
+        /** default settings without breakpoints **/
+        @include page-padding-only($default-padding);
+
+         /** for usage as wrap around a container */
+        #{$wrap-class}-1 {
+            @include page-padding-container($default-padding);
+
+            #{$wrap-class}-inner {
+                @include page-padding-inner($default-padding);
+            }
+
+            /** addition class for usage with position:absolute */
+            #{$wrap-class}-padding {
+                @include page-padding-only($default-padding);
+            }
+        }
+
+        /** for usage as inner wrap of a col */
+        .row #{$wrap-class}-1 {
+            @include page-padding-row($default-padding);
+        }
+
+        /** reset */
+        #{$wrap-class}-0,
+        .row #{$wrap-class}-0{
+            @include page-padding-row-reset();
+        }
+
+        #{$wrap-class}-0 {
+            #{$wrap-class}-inner{
+                @include page-padding-inner-reset();
+            }
+
+            /** addition class for usage with position:absolute */
+            #{$wrap-class}-padding {
+                @include page-padding-only-reset();
+            }
+        }
+
+        /** default settings without breakpoint in class-name, but with different paddings/margins depending on breakpoint */
+        @each $breakpoint, $padding-x in $page-padding {
+
+            @include media-breakpoint-up($breakpoint) {
+
+                /** for usage as wrap around a container */
+                #{$wrap-class}-1 {
+                    @include page-padding-container($padding-x);
+
+                    #{$wrap-class}-inner {
+                        @include page-padding-inner($padding-x);
+                    }
+
+                    /** addition class for usage with position:absolute */
+                    #{$wrap-class}-padding {
+                        @include page-padding-only($default-padding);
+                    }
+                }
+
+                /** for usage as inner wrap of a col */
+                .row #{$wrap-class}-1 {
+                    @include page-padding-row($padding-x);
+                }
+
+                /** reset */
+                #{$wrap-class}-0,
+               .row #{$wrap-class}-0{
+                    @include page-padding-row-reset();
+               }
+
+                #{$wrap-class}-0 {
+                    #{$wrap-class}-inner{
+                        @include page-padding-inner-reset();
+                    }
+
+                    /** addition class for usage with position:absolute */
+                    #{$wrap-class}-padding {
+                        @include page-padding-only-reset();
+                    }
+                }
+            }
+        }
+    }
+
+    /** specific settings for classes with breakpoints in names. Has to be dominant */
+    @each $breakpoint, $padding-x in $page-padding {
+        @include media-breakpoint-up($breakpoint) {
+
+            /** ensure dominance with body-prefix */
+            body #{$page-wrap-class} {
+                padding-left: $padding-x - math.div($grid-gutter-width, 2);
+                padding-right: $padding-x - math.div($grid-gutter-width, 2);
+
+                /** for usage as wrap around a container */
+                #{$wrap-class}-#{$breakpoint}-1 {
+                    @include page-padding-container($padding-x);
+
+                    #{$wrap-class}-inner {
+                        @include page-padding-inner($padding-x);
+                    }
+                }
+
+                /** for usage as inner wrap of a col */
+                .row #{$wrap-class}-#{$breakpoint}-1 {
+                    @include page-padding-row($padding-x);
+                }
+
+                /** reset */
+                #{$wrap-class}-#{$breakpoint}-0,
+                .row #{$wrap-class}-#{$breakpoint}-0 {
+                    @include page-padding-row-reset();
+                }
+
+                #{$wrap-class}-#{$breakpoint}-0 {
+                    #{$wrap-class}-inner{
+                        @include page-padding-inner-reset();
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin page-padding-only ($padding-x) {
+    padding-left: $padding-x - math.div($grid-gutter-width, 2);
+    padding-right: $padding-x - math.div($grid-gutter-width, 2);
+}
+
+@mixin page-padding-container ($padding-x) {
+    padding-left: $padding-x - math.div($grid-gutter-width, 2);
+    padding-right: $padding-x - math.div($grid-gutter-width, 2);
+    margin-left: (($padding-x - math.div($grid-gutter-width, 2)) * -1);
+    margin-right: (($padding-x - math.div($grid-gutter-width, 2)) * -1);
+}
+
+@mixin page-padding-inner ($padding-x) {
+    $additionalWidth: $padding-x * 2 - $grid-gutter-width;
+    width: calc(100% + $additionalWidth);
+    margin-left: $padding-x * -1 + math.div($grid-gutter-width, 2);
+    margin-right: $padding-x * -1 + math.div($grid-gutter-width, 2);
+    overflow: hidden;
+
+    /*
+    $additionalWidth: $padding-x * 2;
+    width: calc(100% + $additionalWidth);
+    margin-left: $padding-x * -1 - math.div($grid-gutter-width, 2);
+    margin-right: $padding-x * -1;
+    padding-left: $grid-gutter-width;
+    overflow: hidden;
+     */
+}
+
+@mixin page-padding-row ($padding-x) {
+    padding-left: $padding-x;
+    padding-right: $padding-x;
+    margin-left: $padding-x * -1;
+    margin-right: $padding-x * -1;
+}
+
+@mixin page-padding-only-reset () {
+    padding-left: initial;
+    padding-right: initial;
+}
+
+@mixin page-padding-row-reset () {
+    padding-left: initial;
+    padding-right: initial;
+    margin-left: initial;
+    margin-right: initial;
+}
+
+@mixin page-padding-inner-reset () {
+    width: initial;
+    margin-left: initial;
+    margin-right: initial;
+    padding-left: initial;
+}

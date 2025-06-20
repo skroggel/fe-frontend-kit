@@ -1,0 +1,185 @@
+#  @madj2k/frontend-kit
+Reusable frontend toolkit including SCSS mixins and menu components (JS/SCSS).
+
+# #  Installation
+```
+npm install @madj2k/frontend-kit
+```
+Requirements:
+For SCSS mixins: Bootstrap SCSS (your project needs to install bootstrap and include it in the build)
+For menu components: none
+
+## Folder-Structure
+* sass:	SCSS mixins (using Bootstrap 5.3 functions/mixins)
+* menus: Separate menu components (JS + SCSS), Bootstrap-independent
+
+##  Usage in your project
+###  SCSS Mixins
+```
+@use '@madj2k/frontend-kit' as *;
+```
+Or import individual mixins:
+```
+@use '@madj2k/frontend-kit/sass/00_mixins/colors' as *;
+```
+###  Menu components (JS and SCSS):
+Each menu component can be used separately.
+
+# Flyout-Navigation
+## Usage
+Integrate the CSS- and JS-file into your project. Make sure jQuery is included.
+Then init the menu with
+```
+import { Madj2kFlyoutMenu } from '@madj2k/frontend-kit/menus/flyout-menu';
+document.querySelectorAll('.js-flyout-toggle').forEach((el) => {
+  new Madj2kFlyoutMenu(el, { animationDuration: 800 });
+});
+```
+CSS:
+```
+@use '@madj2k/frontend-kit/menus/flyout-menu' as *;
+```
+
+## Basic HTML
+```
+<div class="siteheader" id="siteheader">
+
+    [...]
+
+    <nav>
+        <button class="js-flyout-toggle"
+            aria-label="Open menu"
+            aria-controls="nav-mobile"
+            aria-haspopup="true"
+            aria-expanded="false">
+            <span class="icon-bars"></span>
+        </button>
+        <div class="flyout js-flyout"
+             id="nav-mobile"
+             data-position-ref="siteheader">
+            <div class="flyout-container js-flyout-container">
+                <div class="nav-mobile-inner js-flyout-inner">
+                    CONTENT HERE
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+```
+IMPORTANT: If the siteheader is positioned with ```position:fixed```, you have to switch that to ```position:absolute``` when the menu is opened.
+Otherwise in the opened menu the scrolling won't work.
+```
+.flyout-open {
+    .siteheader {
+        position:absolute;
+    }
+}
+```
+## Special: blur/gray effect for background
+* In order to achieve a blur/gray-effect for the background we add the following DIV to the main-content section:
+```
+<div class="background-blur"></div>
+```
+Then we deactivate the fullHeight of the flyout menu and make the blurry background clickable
+```
+import { Madj2kFlyoutdownMenu } from '@madj2k/frontend-kit/menus/flyout-menu';
+document.querySelectorAll('.js-flyout-toggle').forEach((el) => {
+  new Madj2kFlyoutMenu(el, { fullHeight: false });
+});
+document.querySelector('.js-background-blur').addEventListener('click', function() {
+    document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
+});
+```
+* And we need this additional CSS:
+```
+/**
+ * Prevent jumping because of scrollbar
+ */
+html,body {
+    min-height: 100.1%;
+}
+
+/**
+ * background-blur for opened flyout
+ */
+.background-blur {
+    position:fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(1px) grayscale(100%);
+    background-color: rgba(255, 255, 255, 0.7);
+    transition: opacity 0.3s ease-in-out;
+    opacity:0;
+    z-index:-1;
+}
+
+.flyout-open,
+.flyout-closing {
+    .background-blur {
+        z-index:90;
+    }
+}
+
+.flyout-open{
+    .background-blur {
+        opacity:1;
+    }
+ }
+
+
+```
+
+# Pulldown-Navigation
+## Usage
+Integrate the CSS- and JS-file into your project. Make sure jQuery is included.
+Then init the menu with
+```
+import { Madj2kPulldownMenu } from '@madj2k/frontend-kit/menus/pulldown-menu';
+document.querySelectorAll('.js-pulldown-toggle').forEach((el) => {
+  new Madj2kPulldownMenu(el);
+});
+```
+CSS:
+```
+@use '@madj2k/frontend-kit/menus/pulldown-menu' as *;
+```
+
+## Basic HTML
+```
+<div class="siteheader">
+
+    [...]
+
+    <nav class="pulldown-wrap js-pulldown-wrap">
+        <button class="pulldown-toggle js-pulldown-toggle"
+           aria-label="Open Menu"
+           aria-controls="nav-language"
+           aria-haspopup="true"
+           aria-expanded="false">
+            <span>Menu-Item Level 1</span>
+        </button>
+
+        <div class="pulldown js-pulldown" id="nav-language">
+            <div class="pulldown-inner">
+                <ul>
+                    <!-- used to have the right padding-top of the pulldown -->
+                    <li class="pulldown-hide">
+                        <a href="#" tabIndex="-1"><span>Menu-Item Level 1</span></a>
+                    </li>
+                    <li>
+                        <a href="#"><span>Menu-Item I Level 2</span></a>
+                    </li>
+                    <li>
+                        <a href="#"><span>Menu-Item II Level 2</span></a>
+                    </li>
+                    <li>
+                        ...
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+```

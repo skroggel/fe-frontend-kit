@@ -1,0 +1,17 @@
+/* ==================================================
+* Basic variables
+* ================================================== */
+$color-map: (
+    'red': #ff0000,
+    'primary': #00ff00,
+    'secondary': #0000ff,
+) !default;
+
+// some basic variables
+$color-white: #fff !default;
+$color-black: #000000 !default;
+$color-primary: map-get($color-map, 'primary') !default;
+$color-secondary: map-get($color-map, 'secondary') !default;
+$color-text: map-get($color-map, 'secondary') !default;
+$color-error: map-get($color-map, 'primary') !default;
+$color-outline: map-get($color-map, 'primary') !default;

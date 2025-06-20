@@ -1,0 +1,164 @@
+/**! ==================================================
+ * Mixin form fields
+ * ================================================== */
+@use 'sass:math';
+
+/// Styles a custom checkbox input field with accessible markup and visual feedback.
+///
+/// Adds support for background and border color customization, as well as custom icons for
+/// default and active states.
+///
+/// @group Form Fields
+///
+/// @param {Length} $size - The visual size of the checkbox element. Default: `16px`.
+/// @param {Color} $default-bg-color - Background color for default state.
+/// @param {Color} $default-border-color - Border color for default state.
+/// @param {String} $default-icon - Icon shown in default state (optional).
+/// @param {Color} $active-bg-color - Background color for checked/active state.
+/// @param {Color} $active-border-color - Border color for checked/active state.
+/// @param {String} $active-icon - Icon shown when checkbox is checked.
+///
+/// @example scss
+///   .form-check-field:has(input[type="checkbox"]) {
+///     @include checkbox();
+///   }
+///
+/// @example html
+///   <label class="form-check-label" for="element-1">
+///     <span class="form-check-field">
+///       <input class="checkbox" id="element-1" type="checkbox" name="" value="1">
+///     </span>
+///     <span>Label</span>
+///   </label>
+///
+/// @author
+/// Steffen Kroggel <developer@steffenkroggel>
+///
+/// @license
+/// GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin checkbox(
+    $size: 16px,
+    $default-bg-color: $color-white,
+    $default-border-color: $color-secondary,
+    $default-icon: null,
+    $active-bg-color: $color-primary,
+    $active-border-color: $color-primary,
+    $active-icon: '../Images/input-checkbox-active.svg'
+) {
+    position: relative;
+    display: inline;
+    padding-left: rem-calc(math.ceil(strip-unit($size) * 2 * 0.8));
+
+    input {
+        position: absolute;
+        width: 1em;
+        height: 1em;
+        left: 0;
+        opacity: 0;
+    }
+
+    @include accessibility-outline();
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: rem-calc(0);
+        display: inline-block;
+        width: rem-calc($size);
+        height: rem-calc($size);
+        border: rem-calc(1) solid $default-border-color;
+        margin-top: rem-calc(-3);
+        margin-right: rem-calc(10);
+        background-color: $default-bg-color;
+        background-size: 100%;
+        transform: translateY(4px);
+        border-radius: rem-calc(4);
+
+        @if $default-icon != null {
+            background-image: url(#{$default-icon});
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: rem-calc(math.ceil(strip-unit($size) * 0.75));
+        }
+    }
+
+    &:has(input:checked),
+    &[aria-selected="true"] {
+        &::before {
+            background-color: $active-bg-color;
+            border-color: $active-border-color;
+            background-image: url(#{$active-icon});
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: rem-calc(math.ceil(strip-unit($size) * 0.75));
+        }
+    }
+}
+
+
+/// Styles a custom radio input field based on the checkbox mixin.
+///
+/// Builds on the `checkbox()` structure, but renders a circular selection element.
+/// Supports separate border/background/icon definitions for both default and checked state.
+///
+/// @group Form Fields
+///
+/// @param {Length} $size - The visual size of the radio element. Default: `16px`.
+/// @param {Color} $default-bg-color - Background color for default state.
+/// @param {Color} $default-border-color - Border color for default state.
+/// @param {String} $default-icon - Icon shown when radio is not selected (optional).
+/// @param {Color} $active-bg-color - Background color for selected state.
+/// @param {Color} $active-border-color - Border color for selected state.
+/// @param {String} $active-icon - Icon shown when radio is selected.
+///
+/// @example scss
+///   .form-check-field:has(input[type="radio"]) {
+///     @include radio();
+///   }
+///
+/// @example html
+///   <label class="form-check-label" for="element-2">
+///     <span class="form-check-field">
+///       <input class="radio" id="element-2" type="radio" name="options" value="2">
+///     </span>
+///     <span>Label</span>
+///   </label>
+///
+/// @author
+/// Steffen Kroggel <developer@steffenkroggel>
+///
+/// @license
+/// GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin radio(
+    $size: 16px,
+    $default-bg-color: $color-white,
+    $default-border-color: $color-secondary,
+    $default-icon: null,
+    $active-bg-color: $color-primary,
+    $active-border-color: $color-primary,
+    $active-icon: '../Images/input-radio-active.svg'
+) {
+    @include checkbox(
+            $size,
+            $default-bg-color,
+            $default-border-color,
+            $default-icon,
+            $active-bg-color,
+            $active-border-color,
+            $active-icon
+    );
+
+    &::before {
+        border-radius: rem-calc($size); // circular shape
+    }
+
+    &:has(input:checked),
+    &[aria-selected="true"] {
+        &::before {
+            border: 0;
+            background-size: rem-calc(math.ceil(strip-unit($size) * 0.5));
+        }
+    }
+}

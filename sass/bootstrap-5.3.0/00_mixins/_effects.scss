@@ -1,0 +1,45 @@
+/// Adds a custom underline to text elements using a pseudo-element.
+///
+/// This mixin creates a visual underline using `::after`, which allows
+/// for more control than `text-decoration`. It supports customizable
+/// color and thickness, and adjusts vertical spacing responsively.
+///
+/// Useful for link-like text styling or emphasis elements.
+///
+/// @group Effects
+///
+/// @param {Color} $color - The underline color. Default: `$color-primary`.
+/// @param {Length} $width - Thickness of the underline (in px, converted to `rem`). Default: `2px`.
+///
+/// @example scss
+///   .highlighted-text {
+///     @include underline($color-tertiary, 3px);
+///   }
+///
+/// @example css
+///   .highlighted-text::after {
+///     border-bottom: 0.1875rem solid #cc0000;
+///     bottom: -0.09em;
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin underline ($color: $color-primary, $width: 2px) {
+
+    position: relative;
+    display: inline-block;
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -0.09em;
+        border-bottom: rem-calc($width) solid $color;
+
+        @include media-breakpoint-up(xl) {
+            bottom: -0.15em;
+        }
+    }
+}

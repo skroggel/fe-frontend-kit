@@ -1,0 +1,51 @@
+@use 'sass:math';
+
+/// Removes the unit from a given number (e.g. px, em, rem).
+///
+/// Useful when performing mathematical operations on values with units.
+/// If the input is already unitless, it returns the value unchanged.
+///
+/// @group Functions
+///
+/// @param {Number} $number - A numeric value with or without a unit.
+/// @return {Number} - A unitless number.
+///
+/// @example scss
+///   strip-unit(16px); // 16
+///   strip-unit(2rem); // 2
+///   strip-unit(10);   // 10
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@function strip-unit($number) {
+    @if type-of($number) == 'number' and not unitless($number) {
+        @return math.div($number, $number * 0 + 1);
+    }
+    @return $number;
+}
+
+
+/// Converts a pixel value into `rem` units based on a 16px base font size.
+///
+/// This function strips the unit and divides by 16. Useful for fluid, scalable type and layout systems.
+///
+/// Depends on `strip-unit()` for unit handling.
+///
+/// @group Functions
+///
+/// @param {Number} $size - A pixel value to convert (e.g. `16px`, `32`).
+/// @return {String} - A `rem` string with the converted value (e.g. `1rem`).
+///
+/// @example scss
+///   rem-calc(16);    // 1rem
+///   rem-calc(24px);  // 1.5rem
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@function rem-calc($size) {
+    $size: strip-unit($size);
+    $rem-size: math.div($size, 16);
+    @return #{$rem-size}rem;
+}

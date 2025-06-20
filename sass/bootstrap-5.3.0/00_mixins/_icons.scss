@@ -1,0 +1,129 @@
+/// Adds flexible icon+label spacing to inline elements, only if both icon and text are present.
+///
+/// Applies `display: flex` and controlled `margin` on icon spans to create spacing.
+/// Avoids using `gap` to ensure no unintended spacing when only one element is present.
+///
+/// Designed for icon-label patterns such as buttons, links or text blocks.
+///
+/// @group Utilities
+///
+/// @param {Map} $selectors-map - HTML elements to which the behavior should apply, with optional filters.
+/// @param {Number} $margin - Margin between icon and text in rem units. Default: 10.
+///
+/// @example scss
+///   @include flex-icon();
+///
+/// @example html
+///   <a href="#">
+///     <span class="icon icon-xyz"></span>
+///     <span class="label">Open</span>
+///   </a>
+///
+///   <button type="button">
+///     <span class="icon icon-save"></span>
+///     <span>Save</span>
+///   </button>
+///
+///   <a class="flex-icon" href="#">
+///     <span>Text only, but styled like icon-button</span>
+///   </a>
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+
+@mixin flex-icon($selectors-map: (a: ':not(.link-wrap)', p: '', span: '', button: ''), $margin: 10) {
+
+    .flex-icon {
+        text-decoration: none;
+    }
+
+    @each $tag, $filter in $selectors-map {
+        #{$tag}#{$filter}:has(span.icon):has(span:not(.icon)) {
+            display: flex;
+            gap: 0;
+            align-items: center;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: none;
+            }
+
+            span.icon:first-child:not(span.icon:last-child) {
+                margin-right: rem-calc($margin);
+            }
+
+            span.icon:last-child:not(span.icon:first-child) {
+                margin-left: rem-calc($margin);
+            }
+        }
+    }
+}
+
+
+/// Adds dynamic toggle-icon behavior using `.icon` elements inside toggle containers.
+///
+/// Designed to work with buttons or elements that toggle state (e.g. accordions, lists, dropdowns).
+/// This mixin assumes the presence of two `.icon` elements:
+/// - `.icon.toggle-closed` (default visible)
+/// - `.icon.toggle-opened` (visible only when `[aria-expanded="true"]`)
+///
+/// The `.icon` class enables consistent global styling. The icon must appear **after** the specific class
+/// (e.g. `icon-plus icon`), so `.icon` is always last.
+///
+/// @group Toggle Controls
+///
+/// @param {String} $selector - The selector for the toggle element. Default: `.toggle`
+///
+/// @example scss
+///   @include toggle-icon(); // applies to `.toggle`
+///   @include toggle-icon('.faq-toggle'); // applies to `.faq-toggle`
+///
+/// @example html
+///   <button class="toggle" aria-expanded="false">
+///     <span class="icon icon-plus toggle-closed icon"></span>
+///     <span class="icon icon-minus toggle-opened icon"></span>
+///     <span>More Info</span>
+///   </button>
+///
+/// @author
+/// Steffen Kroggel <developer@steffenkroggel>
+///
+/// @license
+/// GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin toggle-icon($selector: '.toggle') {
+    #{$selector}:has(.icon:first-child) {
+        line-height: 1; // icon-only toggle buttons
+    }
+
+    #{$selector}:has(.icon) {
+        background-color: transparent;
+        border: 0;
+        display: inline-block;
+        padding: 0;
+
+        .icon {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+
+            &.toggle-opened {
+                display: none;
+            }
+
+            &.toggle-closed {
+                display: inline-block;
+            }
+        }
+
+        &[aria-expanded="true"] {
+            .icon.toggle-opened {
+                display: inline-block;
+            }
+
+            .icon.toggle-closed {
+                display: none;
+            }
+        }
+    }
+}

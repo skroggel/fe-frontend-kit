@@ -1,0 +1,111 @@
+/* ==================================================
+    Section
+* ================================================== */
+/// Controls spacing between content sections and blocks.
+///
+/// Provides vertical spacing for common layout patterns such as standard content sections
+/// and blocks within them. Designed to work with modifier classes and utility spacing.
+///
+/// Useful for defining global spacing scales, reusable layout patterns, and utility classes.
+///
+/// @group Spacing
+///
+/// @param {String} $section-class - The base class name for content sections. Defaults to `'csp-section'`.
+/// @param {String} $block-class - The class name for sub-content blocks within sections. Defaults to `'csp-block'`.
+/// @param {String} $utility-append-class - Utility suffix used for generating helper classes. Defaults to `'sp'`.
+/// @param {Map} $csp-blocks - Map defining custom spacing for block types (e.g., `text`, `image`, etc.). Defaults to `$content-spacers-blocks`.
+/// @param {Map} $content-spacers - Global content spacing map (e.g., small, medium, large spacing values). Defaults to `$content-spacers`.
+///
+/// @example html
+///   <!-- Basic content sections -->
+///   <div class="csp-section">
+///     [...]
+///   </div>
+///   <div class="csp-section">
+///     [...]
+///   </div>
+///
+/// @example html
+///   <!-- With reduced space between sections with same content type -->
+///   <div class="csp-section csp-block text">
+///     [...]
+///   </div>
+///   <div class="csp-section csp-block text">
+///     [...]
+///   </div>
+///
+/// @example html
+///   <!-- With reduced space between regular blocks -->
+///   <div class="csp-block">
+///     [...]
+///   </div>
+///   <div class="csp-block">
+///     [...]
+///   </div>
+///
+/// @example scss
+///   .layout-default {
+///     @include section-spacing();
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin section-spacing(
+    $section-class: 'csp-section',
+    $block-class: 'csp-block',
+    $not-last-class: 'csp-not-last',
+    $utility-append-class: 'sp',
+    $csp-blocks: $content-spacers-blocks,
+    $content-spacers: $content-spacers
+) {
+    @each $breakpoint, $values in $grid-breakpoints {
+        $spacer-section: map-get(map-get($content-spacers, $breakpoint), 'section');
+        $spacer-block: map-get(map-get($content-spacers, $breakpoint), 'block');
+
+        // section-spacing
+        @include with-media($breakpoint) {
+
+            .#{$section-class},
+            .#{$section-class}-#{$utility-append-class} {
+                margin-bottom: rem-calc($spacer-section);
+            }
+
+            .#{$section-class}.#{$not-last-class}:not(:has(+ .#{$section-class})),
+            .#{$section-class}-#{$utility-append-class}.#{$not-last-class}:not(:has(+ .#{$section-class})) {
+                margin-bottom: 0;
+            }
+        }
+
+        // block-spacing
+        @include with-media($breakpoint) {
+
+            .#{$block-class}:not(.#{$section-class}),
+            .#{$block-class}-#{$utility-append-class} {
+                margin-bottom: rem-calc($spacer-block);
+            }
+
+            .#{$block-class}.#{$not-last-class}:not(.#{$section-class}):not(:has(+ .#{$block-class})),
+            .#{$block-class}-#{$utility-append-class}.#{$not-last-class}:not(:has(+ .#{$block-class})){
+                margin-bottom: 0;
+            }
+
+            @each $csp-block in $csp-blocks {
+                .#{$section-class}.#{$block-class}.#{$csp-block} + .#{$section-class}.#{$block-class}.#{$csp-block} {
+                    margin-top: rem-calc((strip-unit($spacer-section) - strip-unit($spacer-block)) * -1);
+                }
+            }
+        }
+    }
+}
+
+// Helper for media-breakpoint-up
+@mixin with-media($breakpoint) {
+    @if $breakpoint == 'xs' {
+        @content;
+    } @else {
+        @include media-breakpoint-up($breakpoint) {
+            @content;
+        }
+    }
+}

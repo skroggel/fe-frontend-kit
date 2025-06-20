@@ -1,0 +1,208 @@
+/// Applies responsive font-size and line-height for a given font style from the `$font-formats` map.
+///
+/// Supports multiple breakpoints: mobile, tablet, and desktop. default is the fallback
+/// Used as a base mixin for semantic text styles like `h1`, `copy`, etc.
+///
+/// @group Typography
+/// @param {String} $font-format - The key name of the format to apply (e.g., 'h1', 'copy-small').
+/// @param {Map} $font-formats - A map of font style definitions. Defaults to the global `$font-formats` map.
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin font-format($font-format: 'h1', $font-formats: $font-formats) {
+    $format-data: map-get($font-formats, $font-format);
+    $mobile-data: map-get($format-data, 'mobile');
+    $default-data: map-get($format-data, 'default');
+    $keys: map-keys(if($mobile-data, $mobile-data, $default-data));
+
+    @each $key in $keys {
+        $value: if($mobile-data,
+            map-get($mobile-data, $key),
+            map-get($default-data, $key)
+        );
+        #{$key}: $value;
+    }
+
+    @if map-has-key($format-data, 'tablet') {
+        @include media-breakpoint-up(lg) {
+            @each $key in $keys {
+                #{$key}: map-get(map-get($format-data, 'tablet'), $key);
+            }
+        }
+    }
+
+    @if map-has-key($format-data, 'desktop') {
+        @include media-breakpoint-up(xl) {
+            @each $key in $keys {
+                #{$key}: map-get(map-get($format-data, 'desktop'), $key);
+            }
+        }
+    }
+}
+
+/// Typography style for `<h1>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h1 {
+    @include font-format('h1');
+}
+
+/// Typography style for `<h2>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h2 {
+    @include font-format('h2');
+}
+
+/// Typography style for `<h3>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h3 {
+    @include font-format('h3');
+}
+
+/// Typography style for `<h4>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h4 {
+    @include font-format('h4');
+}
+
+/// Typography style for `<h5>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h5 {
+    @include font-format('h5');
+}
+
+/// Typography style for `<h6>` elements.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin h6 {
+    @include font-format('h6');
+}
+
+
+/// Typography style for body copy text.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin copy {
+    @include font-format('copy');
+}
+
+/// Typography style for small body copy.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin copy-small {
+    @include font-format('copy-small');
+}
+
+/// Typography style for links (without additional decoration).
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin link {
+    @include font-format('link');
+}
+
+/// Typography style for overline/captions.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin overline {
+    @include font-format('overline');
+}
+
+/// Typography style for subheaders.
+///
+/// @group Typography
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin subheader {
+    @include font-format('subheader');
+}
+
+/// Applies typographic styles for bold text using the bold font family.
+///
+/// @group Utilities
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin bold {
+    @include font-format('bold');
+}
+
+/// Enables word breaking and hyphenation for improved long text handling.
+///
+/// Works across modern and legacy browsers.
+///
+/// @group Utilities
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin hyphenate() {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+
+/// Resets list styles: removes bullets and spacing.
+///
+/// Useful for unstyled lists or when customizing lists from scratch.
+///
+/// @group Utilities
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin list-reset {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

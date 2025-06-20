@@ -4,7 +4,9 @@
   "description": "Shared frontend utilities, menus and mixins for projects",
   "main": "index.js",
   "style": "index.scss",
-  "files": ["js/", "mixins/", "index.js", "index.scss"],
+  "files": ["js/", "mixins/", "index.js",
+		"sass/bootstrap-5.3.0/index.scss"
+	],
   "author": {
     "name": "Steffen Kroggel",
     "email": "developer@steffenkroggel.de",
@@ -15,5 +17,8 @@
     "type": "git",
     "url": "https://github.com/skroggel/fe-frontend-kit.git"
   },
+	"optionalDependencies": {
+		"bootstrap": "^5.3.0"
+	},
   "keywords": ["scss", "mixins", "frontend", "menu", "pulldown menu", "offcanvas menu", "slide menu", "utilities"]
 }
