@@ -2,10 +2,13 @@
   "name": "@madj2k/fe-frontend-kit",
   "version": "1.0.0",
   "description": "Shared frontend utilities, menus and mixins for projects",
-  "main": "index.js",
-  "style": "index.scss",
-  "files": ["js/", "mixins/", "index.js",
-		"sass/bootstrap-5.3.0/index.scss"
+	"main": "index.js",
+	"style": "index.scss",
+	"files": [
+		"menus/",
+		"sass/",
+		"index.js",
+		"index.scss"
 	],
   "author": {
     "name": "Steffen Kroggel",
