@@ -1,2 +1,2 @@
-import Madj2kFlyoutMenu from './_flyout-menu.js';
+import Madj2kFlyoutMenu from './flyout-menu-2.0.0.js';
 export { Madj2kFlyoutMenu  };

@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"style": "index.scss",
 	"files": [
-		"js/",
+		"tools/",
 		"menus/",
 		"sass/",
 		"index.js",
