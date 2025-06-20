@@ -1,0 +1,19 @@
+{
+  "name": "@madj2k/fe-frontend-kit",
+  "version": "1.0.0",
+  "description": "Shared frontend utilities, menus and mixins for projects",
+  "main": "index.js",
+  "style": "index.scss",
+  "files": ["js/", "mixins/", "index.js", "index.scss"],
+  "author": {
+    "name": "Steffen Kroggel",
+    "email": "developer@steffenkroggel.de",
+    "url": "https://www.steffenkroggel.de"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skroggel/fe-frontend-kit.git"
+  },
+  "keywords": ["scss", "mixins", "frontend", "menu", "pulldown menu", "offcanvas menu", "slide menu", "utilities"]
+}
