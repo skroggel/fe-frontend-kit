@@ -242,8 +242,8 @@
 }
 
 @mixin page-padding-row ($padding-x) {
-    padding-left: $padding-x;
-    padding-right: $padding-x;
+    padding-left: 0;
+    padding-right: 0;
     margin-left: $padding-x * -1;
     margin-right: $padding-x * -1;
 }
