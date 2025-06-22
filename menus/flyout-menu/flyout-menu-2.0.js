@@ -329,6 +329,9 @@ class Madj2kFlyoutMenu {
    * Resizes the menu based on height mode and inner content
    */
   resizeMenu() {
+    const refObj = this.settings.$positionReference || this.$element;
+    const refPos = refObj.getBoundingClientRect();
+    const flyoutTop = refPos.top + refObj.offsetHeight;
     let height = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
 
     if ('fullHeight' in this.settings) {
@@ -339,7 +342,7 @@ class Madj2kFlyoutMenu {
     if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
       const viewPortHeight = window.innerHeight;
       if (height < viewPortHeight) {
-        height = viewPortHeight;
+        height = viewPortHeight - flyoutTop;
       }
       this.settings.$menu.style.height = `${height}px`;
 

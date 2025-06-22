@@ -67,6 +67,7 @@ This class toggles the visibility of any target element referenced by the `aria-
 attribute of a trigger element (button, link, etc.). It manages ARIA attributes for accessibility
 and allows overlays to be closed externally via a custom event.
 
+
 # Flyout-Navigation
 ## Usage
 Integrate the CSS- and JS-file into your project. Make sure jQuery is included.
