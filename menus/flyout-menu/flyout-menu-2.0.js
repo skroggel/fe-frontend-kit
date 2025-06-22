@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
+ * @version 2.0.1
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -49,7 +49,7 @@ class Madj2kFlyoutMenu {
       menuCloseClass: "js-flyout-close",
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
-      heightMode: 'maxContent',
+      heightMode: 'full',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
       animationDuration: 500
@@ -76,25 +76,7 @@ class Madj2kFlyoutMenu {
     this.resizeAndPositionMenu();
     this.paddingMenu();
     this.bindEvents();
-  }
-
-  /**
-   * Binds all necessary event listeners
-   */
-  bindEvents() {
-    if (this.settings.$closeBtn) {
-      this.settings.$closeBtn.addEventListener('click', e => this.closeEvent(e));
-      this.settings.$closeBtn.addEventListener('keydown', e => this.keyboardEvent(e));
-    }
-
-    this.$element.addEventListener('click', e => this.toggleEvent(e));
-    this.$element.addEventListener('keydown', e => this.keyboardEvent(e));
-
-    this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
-      .forEach(el => el.addEventListener('keydown', e => this.keyboardEvent(e)));
-
-    document.addEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
-    document.addEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
+    this.initObservers();
   }
 
   /**
@@ -129,6 +111,88 @@ class Madj2kFlyoutMenu {
   }
 
   /**
+   * Binds all necessary event listeners
+   */
+  bindEvents() {
+    if (this.settings.$closeBtn) {
+      this.settings.$closeBtn.addEventListener('click', e => this.closeEvent(e));
+      this.settings.$closeBtn.addEventListener('keydown', e => this.keyboardEvent(e));
+    }
+
+    this.$element.addEventListener('click', e => this.toggleEvent(e));
+    this.$element.addEventListener('keydown', e => this.keyboardEvent(e));
+
+    this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
+      .forEach(el => el.addEventListener('keydown', e => this.keyboardEvent(e)));
+
+    document.addEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
+    document.addEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
+  }
+
+  /**
+   * Initializes ResizeObserver to auto-resize menu
+   */
+  initObservers() {
+    // check if supported
+    if (typeof ResizeObserver === 'undefined') {
+      console.warn('ResizeObserver is not supported in this browser.');
+      return;
+    }
+
+    // create observer
+    this.resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        this.resizeMenu();
+      }
+    });
+
+    // observe inner container
+    if (this.settings.$menuInner) {
+      this.resizeObserver.observe(this.settings.$menuInner);
+    }
+  }
+
+  /**
+   * Unbinds all event listeners
+   */
+  destroyEvents() {
+    if (this.settings.$closeBtn) {
+      this.settings.$closeBtn.removeEventListener('click', e => this.closeEvent(e));
+      this.settings.$closeBtn.removeEventListener('keydown', e => this.keyboardEvent(e));
+    }
+
+    this.$element.removeEventListener('click', e => this.toggleEvent(e));
+    this.$element.removeEventListener('keydown', e => this.keyboardEvent(e));
+
+    this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
+      .forEach(el => el.removeEventListener('keydown', e => this.keyboardEvent(e)));
+
+    document.removeEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
+    document.removeEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
+  }
+
+  /**
+   * Destroys ResizeObserver
+   */
+  destroyResizeObserver() {
+    if (this.resizeObserver && this.settings.$menuInner) {
+      this.resizeObserver.unobserve(this.settings.$menuInner);
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+
+  /**
+   * Destroys flyout menu instance
+   */
+  destroy() {
+    this.destroyEvents();
+    this.destroyResizeObserver();
+    this.close();
+  }
+
+
+  /**
    * Handles toggle click event
    * @param {Event} e - The click event
    */
@@ -152,6 +216,15 @@ class Madj2kFlyoutMenu {
       this.open();
     }
   }
+
+  /**
+   * Sets focus to the toggle element
+   * @param {number} timeout - Delay before focusing
+   */
+  focusToggle(timeout = 0) {
+    setTimeout(() => this.$element.focus(), timeout);
+  }
+
 
   /**
    * Opens the flyout menu
@@ -182,6 +255,14 @@ class Madj2kFlyoutMenu {
         document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-opened'));
       }, this.settings.animationDuration);
     }
+  }
+
+  /**
+   * Returns true if menu is currently open
+   * @returns {boolean}
+   */
+  isOpen() {
+    return this.settings.$menu.classList.contains(this.settings.openStatusClass);
   }
 
   /**
@@ -237,27 +318,49 @@ class Madj2kFlyoutMenu {
   }
 
   /**
-   * Resizes and positions the menu based on reference elements
+   * Resizes and positions the menu
    */
   resizeAndPositionMenu() {
-    const refObj = this.settings.$positionReference || this.$element;
-    const refPos = refObj.getBoundingClientRect();
-    const flyoutTop = refPos.top + refObj.offsetHeight;
+    this.positionMenu();
+    this.resizeMenu();
+  }
+
+  /**
+   * Resizes the menu based on height mode and inner content
+   */
+  resizeMenu() {
     let height = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
 
-    this.settings.$menu.style.top = `${flyoutTop}px`;
+    if ('fullHeight' in this.settings) {
+      console.warn('Option "fullHeight" is deprecated. Please use "heightMode" instead.');
+    }
 
-    // deprecated fullHeight-setting as fallback
+    // heightMode "full" with deprecated fullHeight-setting as fallback
     if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
-      height = window.innerHeight - refPos.top - refObj.offsetHeight;
+      const viewPortHeight = window.innerHeight;
+      if (height < viewPortHeight) {
+        height = viewPortHeight;
+      }
       this.settings.$menu.style.height = `${height}px`;
 
-    } else if (this.settings.heightMode === 'maxContent'){
+    } else if (this.settings.heightMode === 'maxContent') {
       this.settings.$menu.style.height = `max-content`;
+      console.warn('heightMode: maxContent is not working on Apple Safari. Please use heightMode: full instead.');
 
     } else {
       this.settings.$menu.style.height = `${height}px`;
     }
+  }
+
+  /**
+   * Positions the menu based on the reference element
+   */
+  positionMenu() {
+    const refObj = this.settings.$positionReference || this.$element;
+    const refPos = refObj.getBoundingClientRect();
+    const flyoutTop = refPos.top + refObj.offsetHeight;
+
+    this.settings.$menu.style.top = `${flyoutTop}px`;
   }
 
   /**
@@ -273,6 +376,23 @@ class Madj2kFlyoutMenu {
 
     this.settings.$menuInner.style.paddingLeft = `${left}px`;
     this.settings.$menuInner.setAttribute('data-padding-set', 'true');
+  }
+
+  /**
+   * Initializes the no-scroll helper elements
+   */
+  initNoScrollHelper() {
+    const body = document.body;
+    let helper = body.querySelector('.no-scroll-helper');
+    const content = document.querySelector(`.${this.settings.contentSectionClass}`);
+
+    if (!helper) {
+      if (content) {
+        content.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${content.innerHTML}</div></div>`;
+      } else {
+        body.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${body.innerHTML}</div></div>`;
+      }
+    }
   }
 
   /**
@@ -302,30 +422,5 @@ class Madj2kFlyoutMenu {
       body.classList.remove(this.settings.openStatusBodyClass, this.settings.openStatusBodyClassOverflow);
       window.scrollTo({top: scrollTop, behavior: 'instant'});
     }
-  }
-
-  /**
-   * Initializes the no-scroll helper elements
-   */
-  initNoScrollHelper() {
-    const body = document.body;
-    let helper = body.querySelector('.no-scroll-helper');
-    const content = document.querySelector(`.${this.settings.contentSectionClass}`);
-
-    if (!helper) {
-      if (content) {
-        content.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${content.innerHTML}</div></div>`;
-      } else {
-        body.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${body.innerHTML}</div></div>`;
-      }
-    }
-  }
-
-  /**
-   * Sets focus to the toggle element
-   * @param {number} timeout - Delay before focusing
-   */
-  focusToggle(timeout = 0) {
-    setTimeout(() => this.$element.focus(), timeout);
   }
 }

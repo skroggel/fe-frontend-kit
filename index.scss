@@ -1,6 +1,13 @@
 // Forward all mixins
-@forward './sass/bootstrap-5.3.0/index';
+@forward 'sass/bootstrap-5.3/index';
 
 // Forward all menu styles
 @forward './menus/flyout-menu';
 @forward './menus/pulldown-menu';
+
+// Forward all tools
+@forward 'tools/banner/index';
+@forward 'tools/owl-thumbnail/index';
+@forward 'tools/resize-end/index';
+@forward 'tools/scrolling/index';
+@forward 'tools/toggled-overlay/index';

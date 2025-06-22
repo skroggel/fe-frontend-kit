@@ -26,6 +26,25 @@ Or import individual mixins:
 ###  Menu components (JS and SCSS):
 Each menu component can be used separately.
 
+# JS: Banner
+A lightweight class to show a full-page overlay (banner, popup, hint or cookie layer),
+with opening and closing animation and optional cookie persistence.
+
+# JS: OWL-Thumbnails
+A JavaScript helper class to create a main OWL carousel with a synchronized thumbnail navigation carousel.
+
+Supports flexible configurations for both the main and the thumbnail carousels,
+including:
+- Custom navigation
+- Syncing main carousel to clicked thumbnails
+- Syncing thumbnails to main carousel changes
+- Optionally equalizing thumbnail heights
+- Optionally preventing the centered thumbnail stage shift (for designs where thumbs should stay left aligned)
+- Responsive and CMS-friendly (works with dynamic content)
+
+This is especially useful for image galleries or product carousels in CMS setups (e.g. TYPO3, WordPress, etc.)
+where content may change dynamically.
+
 # JS: Resize-End
 A lightweight helper class that triggers a debounced 'madj2k-resize-end' event
 when the user finishes resizing the browser window.
@@ -43,20 +62,10 @@ A lightweight scrolling helper class that enables:
 The class is fully configurable via options and is designed to be used in CMS contexts
 where elements can be added, removed or re-ordered dynamically.
 
-# JS: OWL-Thumbnails
-A JavaScript helper class to create a main OWL carousel with a synchronized thumbnail navigation carousel.
-
-Supports flexible configurations for both the main and the thumbnail carousels,
-including:
-- Custom navigation
-- Syncing main carousel to clicked thumbnails
-- Syncing thumbnails to main carousel changes
-- Optionally equalizing thumbnail heights
-- Optionally preventing the centered thumbnail stage shift (for designs where thumbs should stay left aligned)
-- Responsive and CMS-friendly (works with dynamic content)
-
-This is especially useful for image galleries or product carousels in CMS setups (e.g. TYPO3, WordPress, etc.)
-where content may change dynamically.
+# JS: Toggled Overlay
+This class toggles the visibility of any target element referenced by the `aria-controls`
+attribute of a trigger element (button, link, etc.). It manages ARIA attributes for accessibility
+and allows overlays to be closed externally via a custom event.
 
 # Flyout-Navigation
 ## Usage

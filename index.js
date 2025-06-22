@@ -1,7 +1,10 @@
 // Tools
-export { Madj2kOwlThumbnail } from './tools/owl/owl-thumbnail.js';
-export { Madj2kScrolling } from './tools/scrolling/scrolling.js';
+export { Madj2kBanner } from './tools/banner';
+export { Madj2kOwlThumbnail } from './tools/owl-thumbnail';
+export { Madj2kResizeEnd } from './tools/resize-end';
+export { Madj2kScrolling } from './tools/scrolling';
+export { Madj2kToggledOverlay } from './tools/toggled-overlay';
 
 // Menus
-export { Madj2kFlyoutMenu } from './menus/flyout-menu-1.0';
-export { Madj2kPulldownMenu } from './menus/pulldown-menu-1.0';
+export { Madj2kFlyoutMenu } from './menus/flyout-menu';
+export { Madj2kPulldownMenu } from './menus/pulldown-menu';
