@@ -334,12 +334,15 @@ class Madj2kFlyoutMenu {
     }
 
     let height = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
+    const refObj = this.settings.$positionReference || this.$element;
+    const refPos = refObj.getBoundingClientRect();
+    const flyoutTop = refPos.top + refObj.offsetHeight;
 
     // heightMode "full" with deprecated fullHeight-setting as fallback
     if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
       const viewPortHeight = window.innerHeight;
       if (height < viewPortHeight) {
-        this.settings.$menu.style.height = `100vh`;
+        this.settings.$menu.style.height = `calc(100vh + ${flyoutTop}px)`;
       } else {
         this.settings.$menu.style.height = `${height}px`;
       }
