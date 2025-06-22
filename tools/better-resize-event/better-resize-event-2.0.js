@@ -1,15 +1,25 @@
 /**
- * Madj2kBetterResizeEvent Events (Vanilla JS)
+ * Madj2kBetterResizeEvent
  *
  * A lightweight helper class that triggers a debounced 'madj2k-better-resize-event' event
  * when the user finishes resizing the browser window.
  *
- * It also manages a scrolling detection state (via body attribute) to avoid triggering
- * resize-events during user scrolling on mobile, and respects active input fields (keyboard-issue on mobile).
+ * In some cases, you need to be able to react to the window's resize event. Unfortunately, however, the resize event is not only triggered at the end of the
+ * resizing of the browser window, but every time the size is changed in between. This can lead to an overhead if the event is handled every
+ * the event every time. With the JS-module, a final event is only triggered when the browser window has been resized.
+ *
+ * The script also considers edge-cases such as showing the software-keyboard and showing / hiding the navigation bar on mobile devices
+ * (both trigger a resize event).
+ *
+ * Notes:
+ * - On iOS (Safari), viewport height and width can change during scroll bounce or keyboard animation.
+ * - This version adds "viewport delta" detection to prevent false-positive resize events.
+ * - Scrolling state is now internal (no more data-resizeend-scrolling attribute).
+ * - New event: 'madj2k-better-resize-event' (legacy event still supported).
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
+ * @version 2.0.1
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
