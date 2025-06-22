@@ -1,5 +1,5 @@
 /**
- * Scrolling-Events (Vanilla JS)
+ * Scrolling-Events
  *
  * A lightweight scrolling helper class that enables:
  * 1. Body classes based on scroll direction (scroll-up / scroll-down)
@@ -12,24 +12,25 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
+ * @version 2.0.1 – Added debug option + log helper, changed anchorScrollingDisableSelector
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example
  * // Initialize with defaults
- * const scrolling = new Scrolling();
+ * const scrolling = new Madj2kScrolling();
  *
  * @example
  * // Initialize with custom config
  * const scrolling = new Madj2kScrolling({
  *   anchorScrollingCollapsibleSelector: ['.collapse', '.custom-collapse'],
- *   anchorScrollingSelector: ['a[href^="#"]', '.btn-scroll'],*
+ *   anchorScrollingSelector: ['a[href^="#"]', '.btn-scroll'],
  *   anchorScrollingOffsetSelector: '#siteheader',
- *   anchorScrollingDisableClass: 'js-no-scroll',
+ *   anchorScrollingDisableSelector: '.js-no-scroll',
  *   appearOnScrollSelector: ['.js-appear-on-scroll'],
  *   appearOnScrollTimeout: 500,
- *   appearOnScrollThreshold: 25*
+ *   appearOnScrollThreshold: 25,
+ *   debug: true
  * });
  *
  * @example
@@ -66,66 +67,70 @@ class Madj2kScrolling {
     anchorScrollingSelector: ['a[href^="#"]'],
     anchorScrollingOffsetSelector: '',
     anchorScrollingScriptScrollTimeout: 800,
-    anchorScrollingDisableClass: 'js-no-scroll',
+    anchorScrollingDisableSelector: '.js-no-scroll',
     anchorScrollingCollapsibleSelector: ['.collapse'],
     anchorScrollingBehavior: 'smooth',
     appearOnScrollSelector: ['.js-appear-on-scroll'],
     appearOnScrollTimeout: 500,
-    appearOnScrollThreshold: 25
+    appearOnScrollThreshold: 25,
+    debug: false
   };
 
   constructor(config) {
     this.config = { ...this.config, ...config };
-    this.scrollTimer = null;
+
+    this.lastScrollTop = window.scrollY;
+    this.lastContentHeight = document.documentElement.scrollHeight;
+
+    this._log('Initialized with config:', this.config);
 
     this.initScrollClassesForBody();
     this.initAnchorScrolling();
     this.initAppearOnScroll();
   }
 
+  /**
+   * Adds scroll classes to body based on scroll direction
+   * @private
+   */
   initScrollClassesForBody() {
-    const body = document.body;
-    let lastScrollTop = window.scrollY;
-    let lastContentHeight = document.documentElement.scrollHeight;
-
-    const setContentHeight = () => {
-      lastContentHeight = document.documentElement.scrollHeight;
-      body.setAttribute('data-last-content-height', lastContentHeight);
-    };
-
     const addScrollClasses = () => {
       const scrollTop = window.scrollY;
       const contentHeight = document.documentElement.scrollHeight;
 
-      if (parseInt(body.getAttribute('data-last-content-height')) !== contentHeight) {
+      if (this.lastContentHeight !== contentHeight) {
+        this._log('Content height changed, skipping scroll class update');
+        this.lastContentHeight = contentHeight;
         return;
       }
 
-      if (!body.classList.contains('block-scroll-classes')) {
+      if (!document.body.classList.contains('block-scroll-classes')) {
         if (scrollTop > 0) {
-          body.classList.remove('scroll-up', 'scroll-down');
-          if (scrollTop > lastScrollTop) {
-            body.classList.add('scroll-down');
-          } else if (scrollTop < lastScrollTop) {
-            body.classList.add('scroll-up');
+          document.body.classList.remove('scroll-up', 'scroll-down');
+          if (scrollTop > this.lastScrollTop) {
+            document.body.classList.add('scroll-down');
+            this._log('Scroll direction: down');
+          } else if (scrollTop < this.lastScrollTop) {
+            document.body.classList.add('scroll-up');
+            this._log('Scroll direction: up');
           }
         } else {
-          body.classList.remove('scroll-down');
+          document.body.classList.remove('scroll-down');
         }
       }
 
-      body.setAttribute('data-last-scroll-top', Math.max(scrollTop, 0));
-      lastScrollTop = scrollTop;
+      this.lastScrollTop = scrollTop;
     };
 
-    setContentHeight();
-
     window.addEventListener('scroll', () => {
-      setContentHeight();
       addScrollClasses();
     });
   }
 
+  /**
+   * Initializes anchor scrolling with optional offset
+   * @private
+   */
   initAnchorScrolling() {
     const offsetElement = document.querySelector(this.config.anchorScrollingOffsetSelector);
     let scriptScrollTimer = null;
@@ -140,7 +145,6 @@ class Madj2kScrolling {
         }
 
         document.body.classList.add('block-scroll-classes');
-
         if (scriptScrollTimer) {
           clearTimeout(scriptScrollTimer);
         }
@@ -153,6 +157,8 @@ class Madj2kScrolling {
           top: scrollTo,
           behavior: this.config.anchorScrollingBehavior
         });
+
+        this._log('Anchor scroll to:', element);
       }
     };
 
@@ -168,7 +174,6 @@ class Madj2kScrolling {
       event.preventDefault();
 
       const anchorId = event.currentTarget.getAttribute('href');
-
       if (anchorId && anchorId.startsWith('#')) {
         const anchor = document.querySelector(anchorId);
         if (anchor) scrollToElement(anchor);
@@ -177,13 +182,13 @@ class Madj2kScrolling {
 
     const getAnchorSelector = () => {
       return this.config.anchorScrollingSelector
-        .map(sel => `${sel}:not(.visually-hidden-focusable):not(.${this.config.anchorScrollingDisableClass})`)
+        .map(sel => `${sel}:not(.visually-hidden-focusable):not(${this.config.anchorScrollingDisableSelector})`)
         .join(', ');
     };
 
     const getCollapsibleSelector = () => {
       return this.config.anchorScrollingCollapsibleSelector
-        .map(sel => `${sel}:not(.${this.config.anchorScrollingDisableClass})`)
+        .map(sel => `${sel}:not(${this.config.anchorScrollingDisableSelector})`)
         .join(', ');
     };
 
@@ -195,6 +200,7 @@ class Madj2kScrolling {
     document.querySelectorAll(getCollapsibleSelector())
       .forEach(el => {
         el.addEventListener('shown.bs.collapse', e => {
+          this._log('Collapse shown, scroll to:', e.target);
           scrollToElement(e.target);
         });
       });
@@ -202,6 +208,10 @@ class Madj2kScrolling {
     jumpToAnchorByUrl();
   }
 
+  /**
+   * Initializes appear-on-scroll animations
+   * @private
+   */
   initAppearOnScroll() {
     const initElement = (element) => {
       const rect = element.getBoundingClientRect();
@@ -210,6 +220,7 @@ class Madj2kScrolling {
 
       if (windowBottom > elementTop) {
         element.setAttribute('data-appear-on-scroll', 0);
+        this._log('Appear on scroll (init):', element);
       } else {
         element.setAttribute('data-appear-on-scroll', 1);
       }
@@ -220,8 +231,9 @@ class Madj2kScrolling {
       const windowBottom = window.scrollY + window.innerHeight;
       const elementTop = window.scrollY + rect.top;
 
-      if (windowBottom > elementTop) {
+      if (windowBottom > elementTop && element.getAttribute('data-appear-on-scroll') !== '0') {
         element.setAttribute('data-appear-on-scroll', 0);
+        this._log('Appear on scroll (show):', element);
       }
     };
 
@@ -240,5 +252,15 @@ class Madj2kScrolling {
     });
 
     window.addEventListener('scroll', updateOnScroll);
+  }
+
+  /**
+   * Debug logging helper
+   * @private
+   */
+  _log(...args) {
+    if (this.config.debug) {
+      console.log('[Madj2kScrolling]', ...args);
+    }
   }
 }

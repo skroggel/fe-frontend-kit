@@ -1,5 +1,5 @@
 /**
- * Overlay (Vanilla JS)
+ * Banner / Overlay (Vanilla JS)
  *
  * A lightweight class to show a full-page overlay (banner, popup, hint or cookie layer),
  * with opening and closing animation and optional cookie persistence.
@@ -15,23 +15,33 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
+ * @version 2.0.1 – legacy bannerCloseId fallback
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
+ * @example
+ * // Advanced usage with config:
+ * const banner = new Madj2kBanner({
+ *   bannerId: 'my-banner',
+ *   activeClass: 'active',
+ *   openClass: 'open',
+ *   closingClass: 'closing',
+ *   openingClass: 'opening',
+ *   timeout: 1000,
+ *   cookieName: 'myBannerCookie',
+ *   cookieDays: 30,
+ *   debug: false
+ * });
  *
- * Basic HTML structure:
- *
- * <div id="my-banner" class="my-banner">
+ * @example
+ * <div id="my-banner" class="banner my-banner">
  *   <div class="my-banner-content">
- *     <button id="my-banner-close" class="my-banner-close">Close</button>
+ *     <button class="my-banner-close" aria-controls="my-banner">Close</button>
  *     <p>Your overlay content here ...</p>
  *   </div>
  * </div>
  *
- *
- * Example CSS:
- *
+ * @example
  * .my-banner {
  *   position: fixed;
  *   top: 0;
@@ -39,58 +49,23 @@
  *   width: 100%;
  *   height: 100%;
  *   background: rgba(0, 0, 0, 0.8);
- *   opacity: 0;
- *   visibility: hidden;
- *   transition: opacity 0.5s ease, visibility 0.5s ease;
  *   z-index: 9999;
  * }
- *
- * .my-banner.active {
- *   visibility: visible;
- * }
- *
- * .my-banner.open {
- *   opacity: 1;
- * }
- *
- * .my-banner.closing {
- *   opacity: 0;
- * }
- *
- *
- * Basic usage:
- *
- * const banner = new Madj2kBanner();
- *
- *
- * Advanced usage with config:
- *
- * const overlay = new Madj2kBanner({
- *   overlayId: 'my-banner',
- *   overlayCloseId: 'my-banner-close',
- *   activeClass: 'active',
- *   openClass: 'open',
- *   closingClass: 'closing',
- *   openingClass: 'opening',
- *   timeout: 1000,
- *   cookieName: 'myOverlayCookie',
- *   cookieDays: 30
- * });
- *
  */
+
 class Madj2kBanner {
 
   config = {
-    'overlayId' : 'overlay',
-    'overlayCloseId' : 'overlay-close',
+    'bannerId' : 'banner',
+    'bannerCloseId': 'banner-close', // fallback legacy
     'activeClass': 'active',
     'openClass': 'open',
     'closingClass': 'closing',
     'openingClass': 'opening',
     'timeout': '1000',
-    'cookieName': 'overlay',
-    'cookieDays': '365'
-
+    'cookieName': 'banner',
+    'cookieDays': '365',
+    'debug': false
   };
 
   /**
@@ -99,44 +74,76 @@ class Madj2kBanner {
    */
   constructor(config) {
     this.config = {...this.config, ...config }
-    this.initOverlay();
+    this._log('Init Madj2kBanner');
+    this.initBanner();
   }
 
   /**
-   * Init overlay if no cookie is set!
+   * Init banner if no cookie is set!
    */
-  initOverlay () {
-    const overlay = document.getElementById(this.config.overlayId);
+  initBanner () {
+    const banner = document.getElementById(this.config.bannerId);
     const self = this;
 
-    if (overlay && ! this.getCookie()) {
+    if (banner && ! this.getCookie()) {
+      this._log('No cookie found, showing banner');
 
-      overlay.classList.add(self.config.activeClass);
+      banner.classList.add(self.config.activeClass);
       setTimeout(function(){
-        overlay.classList.add(self.config.openingClass);
+        banner.classList.add(self.config.openingClass);
         setTimeout(function(){
-          overlay.classList.add(self.config.openClass);
-          overlay.classList.remove(self.config.openingClass);
+          banner.classList.add(self.config.openClass);
+          banner.classList.remove(self.config.openingClass);
+          self._log('Banner opened');
         }, self.config.timeout);
-      }, 1 ); // minimum timeout for transitions!
+      }, 1 );
 
-      const overlayClose = document.getElementById(this.config.overlayCloseId);
-      if (overlayClose) {
-        overlayClose.addEventListener('click', (ee) => {
+      // Add close button(s) via aria-controls
+      let bannerCloseButtons = document.querySelectorAll('[aria-controls="' + this.config.bannerId + '"]');
 
-          this.setCookie();
+      // fallback to legacy ID
+      if (bannerCloseButtons.length === 0 && this.config.bannerCloseId) {
+        const legacyButton = document.getElementById(this.config.bannerCloseId);
+        if (legacyButton) {
+          this._log('Legacy close button fallback used:', this.config.bannerCloseId);
+          legacyButton.addEventListener('click', (ee) => {
+            this._closeBanner(banner);
+          });
+        }
+      } else {
 
-          overlay.classList.add(self.config.closingClass);
-          overlay.classList.remove(self.config.openClass);
-          setTimeout(function(){
-            overlay.classList.remove(self.config.closingClass);
-            overlay.classList.remove(self.config.activeClass);
-          }, self.config.timeout);
+        bannerCloseButtons.forEach(button => {
+          button.addEventListener('click', (ee) => {
+            this._closeBanner(banner);
+          });
         });
+      }
+
+    } else {
+      if (banner) {
+        this._log('Banner not shown (cookie found)');
       }
     }
   }
 
+  /**
+   * Closes the banner and sets cookie
+   * @param banner
+   * @private
+   */
+  _closeBanner(banner) {
+    this.setCookie();
+
+    banner.classList.add(this.config.closingClass);
+    banner.classList.remove(this.config.openClass);
+    this._log('Banner closing');
+
+    setTimeout(() => {
+      banner.classList.remove(this.config.closingClass);
+      banner.classList.remove(this.config.activeClass);
+      this._log('Banner closed');
+    }, this.config.timeout);
+  }
 
   /**
    * Sets cookie
@@ -146,8 +153,8 @@ class Madj2kBanner {
     d.setTime(d.getTime() + (this.config.cookieDays * 24 * 60 * 60 * 1000));
     let expires = "expires=" + d.toUTCString();
     document.cookie = (this.config.cookieName + '=1;' + expires + ';path=/' + '; SameSite=Strict');
+    this._log('Cookie set:', this.config.cookieName);
   }
-
 
   /**
    * Gets cookie values
@@ -163,10 +170,21 @@ class Madj2kBanner {
         c = c.substring(1);
       }
       if (c.indexOf(name) === 0) {
+        this._log('Cookie found:', this.config.cookieName);
         return c.substring(name.length, c.length);
       }
     }
 
     return '';
+  }
+
+  /**
+   * Debug logging helper
+   * @private
+   */
+  _log(...args) {
+    if (this.config.debug) {
+      console.log('[Madj2kBanner]', ...args);
+    }
   }
 }

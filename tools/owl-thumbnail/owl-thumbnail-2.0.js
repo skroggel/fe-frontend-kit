@@ -21,6 +21,27 @@
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
+ * @example:
+ * const owlThumbnail = new Madj2kOwlThumbnail('.js-main-carousel', '.js-thumbs-carousel', {
+ *     main: {
+ *       items: 1,
+ *       margin: 20,
+ *       dots: true,
+ *       nav: true,
+ *       autoHeight: true
+ *     },
+ *     thumbs: {
+ *       items: 3,
+ *       margin: 10,
+ *       dots: false,
+ *       nav: true,
+ *       center: true
+ *     },
+ *     resizeEvent: 'custom.resize',
+ *     equalizeThumbHeights: true,
+ *     noStageOffset: true
+ *     }
+ *   });
  * HTML example without data attributes:
  * <div class="js-main-carousel owl-carousel">
  *   <div class="item"><img src="image1.jpg" alt=""></div>
@@ -45,28 +66,6 @@
  *   <div class="item" data-index="2"><img src="thumb3.jpg" alt=""></div>
  * </div>
  *
- * @example:
- *
- * const owlThumbnail = new Madj2kOwlThumbnail('.js-main-carousel', '.js-thumbs-carousel', {
- *     main: {
- *       items: 1,
- *       margin: 20,
- *       dots: true,
- *       nav: true,
- *       autoHeight: true
- *     },
- *     thumbs: {
- *       items: 3,
- *       margin: 10,
- *       dots: false,
- *       nav: true,
- *       center: true
- *     },
- *     resizeEvent: 'custom.resize',
- *     equalizeThumbHeights: true,
- *     noStageOffset: true
- *     }
- *   });
  */
 class Madj2kOwlThumbnail {
   constructor(mainSelector, thumbSelector, options = {}, debug = false) {

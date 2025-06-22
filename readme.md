@@ -30,6 +30,45 @@ Each menu component can be used separately.
 A lightweight class to show a full-page overlay (banner, popup, hint or cookie layer),
 with opening and closing animation and optional cookie persistence.
 
+Init:
+```
+import { Madj2kBanner } from '@madj2k/frontend-kit/tools/banner';
+const banner = new Madj2kBanner({
+  bannerId: 'my-banner',
+  activeClass: 'active',
+  openClass: 'open',
+  closingClass: 'closing',
+  openingClass: 'opening',
+  timeout: 1000,
+  cookieName: 'myBannerCookie',
+  cookieDays: 30,
+  debug: false
+});
+```
+
+HTML:
+```
+<div id="my-banner" class="banner my-banner">
+  <div class="my-banner-content">
+    <button class="my-banner-close" aria-controls="my-banner">Close</button>
+    <p>Your overlay content here ...</p>
+  </div>
+</div>
+```
+
+CSS:
+```
+.my-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+}
+```
+
 # JS: OWL-Thumbnails
 A JavaScript helper class to create a main OWL carousel with a synchronized thumbnail navigation carousel.
 
@@ -45,12 +84,67 @@ including:
 This is especially useful for image galleries or product carousels in CMS setups (e.g. TYPO3, WordPress, etc.)
 where content may change dynamically.
 
-# JS: Resize-End
-A lightweight helper class that triggers a debounced 'madj2k-resize-end' event
+Init with available options:
+```
+const owlThumbnail = new Madj2kOwlThumbnail('.js-main-carousel', '.js-thumbs-carousel', {
+    main: {
+      items: 1,
+      margin: 20,
+      dots: true,
+      nav: true,
+      autoHeight: true
+    },
+    thumbs: {
+      items: 3,
+      margin: 10,
+      dots: false,
+      nav: true,
+      center: true
+    },
+    resizeEvent: 'custom.resize',
+    equalizeThumbHeights: true,
+    noStageOffset: true
+    }
+  });
+```
+
+HTML:
+```
+<div class="js-main-carousel owl-carousel">
+  <div class="item"><img src="image1.jpg" alt=""></div>
+  <div class="item"><img src="image2.jpg" alt=""></div>
+  <div class="item"><img src="image3.jpg" alt=""></div>
+</div>
+<div class="js-thumbs-carousel owl-carousel">
+  <div class="item" data-index="0"><img src="thumb1.jpg" alt=""></div>
+  <div class="item" data-index="1"><img src="thumb2.jpg" alt=""></div>
+  <div class="item" data-index="2"><img src="thumb3.jpg" alt=""></div>
+</div>
+```
+
+# JS: Better Resize Event
+A lightweight helper class that triggers a debounced 'madj2k-better-resize-event' event
 when the user finishes resizing the browser window.
 
 It also manages a scrolling detection state (via body attribute) to avoid triggering
-resize-end during user scrolling, and respects active input fields (useful on mobile).
+resize-events during user scrolling on mobile, and respects active input fields (keyboard-issue on mobile).
+
+Init with available options:
+```
+import { Madj2kBetterResizeEvent } from '@madj2k/frontend-kit/tools/better-resize-event';
+const betterResizeEvent = new Madj2kBetterResizeEvent({
+    resizeEndTimeout: 300,
+    scrollingEndTimeout: 600,
+    viewportDeltaThreshold: 50
+});
+```
+Usage:
+```
+document.addEventListener('madj2k-better-resize-event', () => {
+  console.log('Resize fired');
+});
+```
+
 
 # JS: Scrolling
 A lightweight scrolling helper class that enables:
@@ -62,11 +156,52 @@ A lightweight scrolling helper class that enables:
 The class is fully configurable via options and is designed to be used in CMS contexts
 where elements can be added, removed or re-ordered dynamically.
 
+Init with available options:
+```
+import { Madj2kScrolling } from '@madj2k/frontend-kit/tools/scrolling';
+const scrolling = new Madj2kScrolling({
+  anchorScrollingCollapsibleSelector: ['.collapse', '.custom-collapse'],
+  anchorScrollingSelector: ['a[href^="#"]', '.btn-scroll'],
+  anchorScrollingOffsetSelector: '#siteheader',
+  anchorScrollingDisableSelector: '.js-no-scroll',
+  appearOnScrollSelector: ['.js-appear-on-scroll'],
+  appearOnScrollTimeout: 500,
+  appearOnScrollThreshold: 25,
+  debug: true
+});
+```
+Usage with Appear-On-Scroll (HTML):
+```
+<div class="js-appear-on-scroll">
+  <h2>Animated content</h2>
+  <p>This will fade and move in when scrolled into view.</p>
+</div>
+```
+
 # JS: Toggled Overlay
 This class toggles the visibility of any target element referenced by the `aria-controls`
 attribute of a trigger element (button, link, etc.). It manages ARIA attributes for accessibility
 and allows overlays to be closed externally via a custom event.
 
+Init with available options:
+```
+import { Madj2kToggledOverlay } from '@madj2k/frontend-kit/tools/toggled-overlay';
+const overlayToggle = new Madj2kToggledOverlay('.js-toggled-overlay');
+```
+
+HTML:
+```
+<button class="js-toggled-overlay toggled-overlay-button"
+        aria-label="Open overlay"
+        aria-controls="my-overlay"
+        aria-expanded="false">
+  <span class="icon icon-info"></span>
+</button>
+
+<div id="my-overlay" class="toggled-overlay" aria-hidden="true">
+  <!-- Overlay content -->
+</div>
+```
 
 # Flyout-Navigation
 ## Usage

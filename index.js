@@ -1,5 +1,6 @@
 // Tools
 export { Madj2kBanner } from './tools/banner';
+export { Madj2kBetterResizeEvent } from './tools/better-resize-event';
 export { Madj2kOwlThumbnail } from './tools/owl-thumbnail';
 export { Madj2kResizeEnd } from './tools/resize-end';
 export { Madj2kScrolling } from './tools/scrolling';

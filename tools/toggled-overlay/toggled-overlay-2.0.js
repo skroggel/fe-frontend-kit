@@ -1,15 +1,15 @@
 /**!
  * ToggledOverlay
  *
- * @author Steffen Kroggel <developer@steffenkroggel.de>
- * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
- * @license GNU General Public License v3.0
- * @see https://www.gnu.org/licenses/gpl-3.0.en.html
- *
  * This class toggles the visibility of any target element referenced by the `aria-controls`
  * attribute of a trigger element (button, link, etc.). It manages ARIA attributes for accessibility
  * and allows overlays to be closed externally via a custom event.
+ *
+ * @author Steffen Kroggel <developer@steffenkroggel.de>
+ * @copyright 2025 Steffen Kroggel
+ * @version 2.0.1
+ * @license GNU General Public License v3.0
+ * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example
  * Example HTML:

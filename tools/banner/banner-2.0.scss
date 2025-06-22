@@ -1,14 +1,7 @@
-.my-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+.banner {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.5s ease, visibility 0.5s ease;
-    z-index: 9999;
 
     &.active {
         visibility: visible;
