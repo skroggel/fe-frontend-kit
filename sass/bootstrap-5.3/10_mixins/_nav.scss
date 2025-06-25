@@ -301,9 +301,6 @@
     margin: 0;
     padding: 0;
 
-    // accessibility
-    @include accessibility-outline();
-
     &:has(.nav-toggle-icon) {
         display: flex;
         align-items: center;

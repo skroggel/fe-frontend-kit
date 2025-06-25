@@ -30,21 +30,38 @@
 ///
 @mixin accessibility-outline($color: var(--bs-primary), $width: 3px, $selector: null) {
 
+    // remove outline
     &:focus,
     &:focus-within {
         outline: 0;
     }
 
-    &:has(input:focus-visible),
-    &:focus-visible {
-        @if $selector == null {
+    // default behavior
+    @if $selector == null {
+
+        &:has(input:focus-visible),
+        &:focus-visible {
             outline: rem-calc($width) solid $color;
-        } @else if str-slice($selector, 1, 2) == '::' {
-            #{&}#{$selector} {
+        }
+    }
+    @else {
+
+        // if we have a pseudo-element selector
+        // we need to add a space before the pseudo-element
+        // to prevent the pseudo-element from being removed
+        // when the selector is parsed
+        @if str-slice($selector, 1, 2) == '::' {
+            &:has(input:focus-visible)#{$selector},
+            &:focus-visible#{$selector} {
                 outline: rem-calc($width) solid $color;
             }
-        } @else {
-            #{$selector} {
+        }
+
+        // if we have normal selector
+        // we can just add the selector
+        @else {
+            &:has(input:focus-visible) #{$selector},
+            &:focus-visible #{$selector} {
                 outline: rem-calc($width) solid $color;
             }
         }
