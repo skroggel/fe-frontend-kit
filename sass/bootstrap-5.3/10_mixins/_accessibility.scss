@@ -39,8 +39,12 @@
     &:focus-visible {
         @if $selector == null {
             outline: rem-calc($width) solid $color;
+        } @else if str-slice($selector, 1, 2) == '::' {
+            #{&}#{$selector} {
+                outline: rem-calc($width) solid $color;
+            }
         } @else {
-            #{$selector} {
+            & #{$selector} {
                 outline: rem-calc($width) solid $color;
             }
         }
