@@ -44,7 +44,7 @@
                 outline: rem-calc($width) solid $color;
             }
         } @else {
-            & #{$selector} {
+            #{$selector} {
                 outline: rem-calc($width) solid $color;
             }
         }
