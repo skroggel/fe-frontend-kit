@@ -12,6 +12,7 @@
 ///
 /// @param {Color} $color - Outline color for focused state. Defaults to `$color-outline`.
 /// @param {Length} $width - Outline width. Defaults to `3px`.
+/// @param {Selector} $selector - Optional sub-selector to apply the outline to. Defaults to `null`
 ///
 /// @example scss
 ///   button,
@@ -27,7 +28,7 @@
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin accessibility-outline ($color: var(--bs-primary), $width: 3px) {
+@mixin accessibility-outline($color: var(--bs-primary), $width: 3px, $selector: null) {
 
     &:focus,
     &:focus-within {
@@ -36,7 +37,13 @@
 
     &:has(input:focus-visible),
     &:focus-visible {
-        outline: rem-calc($width) solid $color;
+        @if $selector == null {
+            outline: rem-calc($width) solid $color;
+        } @else {
+            #{$selector} {
+                outline: rem-calc($width) solid $color;
+            }
+        }
     }
-
 }
+
