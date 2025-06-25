@@ -1,6 +1,6 @@
 {
   "name": "@madj2k/fe-frontend-kit",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "Shared frontend utilities, menus and mixins for projects",
 	"main": "index.js",
 	"style": "index.scss",
