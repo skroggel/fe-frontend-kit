@@ -12,7 +12,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.1
+ * @version 2.0.2
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -24,7 +24,7 @@
  * // Initialize with custom config
  * const scrolling = new Madj2kScrolling({
  *     anchorScrolling: {
- *       selector: ['a[href^="#"]'],
+ *       selector: ['a[href*="#"]'],
  *       offsetSelector: null,
  *       disableSelector: '.js-no-scroll',
  *       collapsibleSelector: ['.collapse'],
@@ -73,7 +73,7 @@
 class Madj2kScrolling {
   config = {
     anchorScrolling: {
-      selector: ['a[href^="#"]'],
+      selector: ['a[href*="#"]'],
       offsetSelector: null,
       disableSelector: '.js-no-scroll',
       collapsibleSelector: ['.collapse'],
@@ -232,11 +232,20 @@ class Madj2kScrolling {
     };
 
     const jumpToAnchorByLink = (event) => {
-      event.preventDefault();
+      const href = event.currentTarget.getAttribute('href');
+      if (!href) return;
 
-      const anchorId = event.currentTarget.getAttribute('href');
-      if (anchorId && anchorId.startsWith('#')) {
-        const anchor = document.querySelector(anchorId);
+      // check if link is to the same page - with or without path
+      const [linkPath, hash] = href.split('#');
+      const currentUrl = window.location.origin + window.location.pathname;
+      const isSamePage = (
+        href.startsWith('#') ||
+        (window.location.origin + linkPath) === currentUrl
+      );
+
+      if (isSamePage && hash) {
+        event.preventDefault();
+        const anchor = document.getElementById(hash);
         if (anchor) scrollToElement(anchor);
       }
     };
