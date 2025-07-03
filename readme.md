@@ -86,26 +86,33 @@ where content may change dynamically.
 
 Init with available options:
 ```
-const owlThumbnail = new Madj2kOwlThumbnail('.js-main-carousel', '.js-thumbs-carousel', {
-    main: {
-      items: 1,
-      margin: 20,
-      dots: true,
-      nav: true,
-      autoHeight: true
-    },
-    thumbs: {
-      items: 3,
-      margin: 10,
-      dots: false,
-      nav: true,
-      center: true
-    },
-    resizeEvent: 'custom.resize',
-    equalizeThumbHeights: true,
-    noStageOffset: true
-    }
-  });
+$('.js-slider-container').each(function () {
+    const owlThumbnail = new Madj2kOwlThumbnail(
+        '.js-main-carousel',
+        '.js-thumbs-carousel',
+        {
+            main: {
+              items: 1,
+              margin: 20,
+              dots: true,
+              nav: true,
+              autoHeight: true
+            },
+            thumbs: {
+              items: 3,
+              margin: 10,
+              dots: false,
+              nav: true,
+              center: true
+            },
+            resizeEvent: 'custom.resize',
+            equalizeThumbHeights: true,
+            noStageOffset: true
+        },
+        false,
+        this
+    });
+});
 ```
 
 HTML:
@@ -160,14 +167,22 @@ Init with available options:
 ```
 import { Madj2kScrolling } from '@madj2k/frontend-kit/tools/scrolling';
 const scrolling = new Madj2kScrolling({
-  anchorScrollingCollapsibleSelector: ['.collapse', '.custom-collapse'],
-  anchorScrollingSelector: ['a[href^="#"]', '.btn-scroll'],
-  anchorScrollingOffsetSelector: '#siteheader',
-  anchorScrollingDisableSelector: '.js-no-scroll',
-  appearOnScrollSelector: ['.js-appear-on-scroll'],
-  appearOnScrollTimeout: 500,
-  appearOnScrollThreshold: 25,
-  debug: true
+    anchorScrolling: {
+      selector: ['a[href^="#"]'],
+      offsetSelector: null,
+      disableSelector: '.js-no-scroll',
+      collapsibleSelector: ['.collapse'],
+      behavior: 'smooth',
+      scriptScrollTimeout: 800,
+      timeout: 500,
+      threshold: 40
+    },
+    appearOnScroll: {
+      selector: ['.js-appear-on-scroll'],
+      timeout: 500,
+      threshold: 25
+    },
+    debug: false
 });
 ```
 Usage with Appear-On-Scroll (HTML):

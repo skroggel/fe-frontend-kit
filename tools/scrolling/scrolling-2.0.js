@@ -12,7 +12,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.1 – Added debug option + log helper, changed anchorScrollingDisableSelector
+ * @version 2.0.1
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -23,14 +23,22 @@
  * @example
  * // Initialize with custom config
  * const scrolling = new Madj2kScrolling({
- *   anchorScrollingCollapsibleSelector: ['.collapse', '.custom-collapse'],
- *   anchorScrollingSelector: ['a[href^="#"]', '.btn-scroll'],
- *   anchorScrollingOffsetSelector: '#siteheader',
- *   anchorScrollingDisableSelector: '.js-no-scroll',
- *   appearOnScrollSelector: ['.js-appear-on-scroll'],
- *   appearOnScrollTimeout: 500,
- *   appearOnScrollThreshold: 25,
- *   debug: true
+ *     anchorScrolling: {
+ *       selector: ['a[href^="#"]'],
+ *       offsetSelector: null,
+ *       disableSelector: '.js-no-scroll',
+ *       collapsibleSelector: ['.collapse'],
+ *       behavior: 'smooth',
+ *       scriptScrollTimeout: 800,
+ *       timeout: 500,
+ *       threshold: 40
+ *     },
+ *     appearOnScroll: {
+ *       selector: ['.js-appear-on-scroll'],
+ *       timeout: 500,
+ *       threshold: 25
+ *     },
+ *     debug: false
  * });
  *
  * @example
@@ -64,20 +72,47 @@
 
 class Madj2kScrolling {
   config = {
-    anchorScrollingSelector: ['a[href^="#"]'],
-    anchorScrollingOffsetSelector: '',
-    anchorScrollingScriptScrollTimeout: 800,
-    anchorScrollingDisableSelector: '.js-no-scroll',
-    anchorScrollingCollapsibleSelector: ['.collapse'],
-    anchorScrollingBehavior: 'smooth',
-    appearOnScrollSelector: ['.js-appear-on-scroll'],
-    appearOnScrollTimeout: 500,
-    appearOnScrollThreshold: 25,
+    anchorScrolling: {
+      selector: ['a[href^="#"]'],
+      offsetSelector: null,
+      disableSelector: '.js-no-scroll',
+      collapsibleSelector: ['.collapse'],
+      behavior: 'smooth',
+      scriptScrollTimeout: 800,
+      timeout: 500,
+      threshold: 40
+    },
+    appearOnScroll: {
+      selector: ['.js-appear-on-scroll'],
+      timeout: 500,
+      threshold: 25
+    },
     debug: false
   };
 
+
+  /**
+   *
+   * @param config
+   */
   constructor(config) {
-    this.config = { ...this.config, ...config };
+
+    // backwards compatibility
+    this._normalizeNestedConfig(config, 'anchorScrolling', 'anchorScrolling');
+    this._normalizeNestedConfig(config, 'appearOnScroll', 'appearOnScroll');
+
+    this.config = {
+      ...this.config,
+      ...config,
+      anchorScrolling: {
+        ...this.config.anchorScrolling,
+        ...config.anchorScrolling
+      },
+      appearOnScroll: {
+        ...this.config.appearOnScroll,
+        ...config.appearOnScroll
+      }
+    };
 
     this.lastScrollTop = window.scrollY;
     this.lastContentHeight = document.documentElement.scrollHeight;
@@ -87,6 +122,29 @@ class Madj2kScrolling {
     this.initScrollClassesForBody();
     this.initAnchorScrolling();
     this.initAppearOnScroll();
+  }
+
+  /**
+   * Converts flat config keys starting with a prefix into nested objects.
+   * E.g., "anchorScrollingOffsetSelector" → config.anchorScrolling.offsetSelector
+   * @param {Object} config - The config object to normalize
+   * @param {String} prefix - The prefix to search for (e.g., "anchorScrolling")
+   * @param {String} targetKey - The target key to write into (e.g., "anchorScrolling")
+   * @private
+   */
+  _normalizeNestedConfig(config, prefix, targetKey) {
+    const prefixLength = prefix.length;
+
+    Object.keys(config).forEach((key) => {
+      if (key.startsWith(prefix) && key.length > prefixLength) {
+        const subKey = key.substring(prefixLength);
+        const camelCaseKey = subKey.charAt(0).toLowerCase() + subKey.slice(1);
+
+        config[targetKey] ??= {};
+        config[targetKey][camelCaseKey] = config[key];
+        delete config[key];
+      }
+    });
   }
 
   /**
@@ -132,13 +190,14 @@ class Madj2kScrolling {
    * @private
    */
   initAnchorScrolling() {
-    const offsetElement = document.querySelector(this.config.anchorScrollingOffsetSelector);
+
     let scriptScrollTimer = null;
+    const offsetElement = document.querySelector(this.config.anchorScrolling.offsetSelector);
 
     const scrollToElement = (element) => {
       if (element) {
         const rect = element.getBoundingClientRect();
-        let scrollTo = window.scrollY + rect.top - 40;
+        let scrollTo = window.scrollY + rect.top - this.config.anchorScrolling.threshold;
 
         if (offsetElement && offsetElement.offsetTop >= 0 && !offsetElement.hidden) {
           scrollTo -= offsetElement.offsetHeight;
@@ -151,11 +210,11 @@ class Madj2kScrolling {
 
         scriptScrollTimer = setTimeout(() => {
           document.body.classList.remove('block-scroll-classes');
-        }, this.config.anchorScrollingScriptScrollTimeout);
+        }, this.config.anchorScrolling.scriptScrollTimeout);
 
         window.scrollTo({
           top: scrollTo,
-          behavior: this.config.anchorScrollingBehavior
+          behavior: this.config.anchorScrolling.behavior
         });
 
         this._log('Anchor scroll to:', element);
@@ -163,11 +222,13 @@ class Madj2kScrolling {
     };
 
     const jumpToAnchorByUrl = () => {
-      const anchorName = window.location.hash.replace('#', '');
-      if (anchorName) {
-        const anchor = document.querySelector(`a[id="${anchorName}"], #${anchorName}`);
-        if (anchor) scrollToElement(anchor);
-      }
+      setTimeout(() => {
+        const anchorName = window.location.hash.replace('#', '');
+        if (anchorName) {
+          const anchor = document.querySelector(`a[id="${anchorName}"], #${anchorName}`);
+          if (anchor) scrollToElement(anchor);
+        }
+      }, this.config.anchorScrolling.timeout);
     };
 
     const jumpToAnchorByLink = (event) => {
@@ -181,14 +242,14 @@ class Madj2kScrolling {
     };
 
     const getAnchorSelector = () => {
-      return this.config.anchorScrollingSelector
-        .map(sel => `${sel}:not(.visually-hidden-focusable):not(${this.config.anchorScrollingDisableSelector})`)
+      return this.config.anchorScrolling.selector
+        .map(sel => `${sel}:not(.visually-hidden-focusable):not(${this.config.anchorScrolling.disableSelector})`)
         .join(', ');
     };
 
     const getCollapsibleSelector = () => {
-      return this.config.anchorScrollingCollapsibleSelector
-        .map(sel => `${sel}:not(${this.config.anchorScrollingDisableSelector})`)
+      return this.config.anchorScrolling.collapsibleSelector
+        .map(sel => `${sel}:not(${this.config.anchorScrolling.disableSelector})`)
         .join(', ');
     };
 
@@ -238,7 +299,7 @@ class Madj2kScrolling {
     };
 
     const getAppearOnScrollSelector = () => {
-      return this.config.appearOnScrollSelector.join(', ');
+      return this.config.appearOnScroll.selector.join(', ');
     };
 
     const updateOnScroll = () => {

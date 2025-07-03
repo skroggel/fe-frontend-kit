@@ -17,37 +17,39 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 1.0.0
+ * @version 2.0.1
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example:
- * $('.js-highlight-slider-container').each(function () {
- *  const owlThumbnail = new Madj2kOwlThumbnail(
- *    '.js-main-carousel',
- *    '.js-thumbs-carousel',
- *    {
- *     main: {
- *       items: 1,
- *       margin: 20,
- *       dots: true,
- *       nav: true,
- *       autoHeight: true
- *     },
- *     thumbs: {
- *       items: 3,
- *       margin: 10,
- *       dots: false,
- *       nav: true,
- *       center: true
- *     },
- *     resizeEvent: 'custom.resize',
- *     equalizeThumbHeights: true,
- *     noStageOffset: true
- *     },
- *     false,
- *     this
- *   });
+ * $('.js-slider-container').each(function () {
+ *     const owlThumbnail = new Madj2kOwlThumbnail(
+ *         '.js-main-carousel',
+ *         '.js-thumbs-carousel',
+ *         {
+ *             main: {
+ *               items: 1,
+ *               margin: 20,
+ *               dots: true,
+ *               nav: true,
+ *               autoHeight: true
+ *             },
+ *             thumbs: {
+ *               items: 3,
+ *               margin: 10,
+ *               dots: false,
+ *               nav: true,
+ *               center: true
+ *             },
+ *             resizeEvent: 'custom.resize',
+ *             equalizeThumbHeights: true,
+ *             noStageOffset: true
+ *         },
+ *         false,
+ *         this
+ *     });
+ * });
+ *
  * HTML example without data attributes:
  * <div class="js-main-carousel owl-carousel">
  *   <div class="item"><img src="image1.jpg" alt=""></div>
