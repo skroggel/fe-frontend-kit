@@ -12,7 +12,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.2
+ * @version 2.0.3
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -235,17 +235,12 @@ class Madj2kScrolling {
       const href = event.currentTarget.getAttribute('href');
       if (!href) return;
 
-      // check if link is to the same page - with or without path
-      const [linkPath, hash] = href.split('#');
-      const currentUrl = window.location.origin + window.location.pathname;
-      const isSamePage = (
-        href.startsWith('#') ||
-        (window.location.origin + linkPath) === currentUrl
-      );
+      const url = new URL(href, window.location.origin); // wandelt auch relative URLs korrekt um
+      const isSamePage = url.pathname === window.location.pathname;
 
-      if (isSamePage && hash) {
+      if (isSamePage && url.hash) {
         event.preventDefault();
-        const anchor = document.getElementById(hash);
+        const anchor = document.getElementById(url.hash.substring(1));
         if (anchor) scrollToElement(anchor);
       }
     };
