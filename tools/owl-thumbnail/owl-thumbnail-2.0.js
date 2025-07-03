@@ -22,7 +22,11 @@
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example:
- * const owlThumbnail = new Madj2kOwlThumbnail('.js-main-carousel', '.js-thumbs-carousel', {
+ * $('.js-highlight-slider-container').each(function () {
+ *  const owlThumbnail = new Madj2kOwlThumbnail(
+ *    '.js-main-carousel',
+ *    '.js-thumbs-carousel',
+ *    {
  *     main: {
  *       items: 1,
  *       margin: 20,
@@ -40,7 +44,9 @@
  *     resizeEvent: 'custom.resize',
  *     equalizeThumbHeights: true,
  *     noStageOffset: true
- *     }
+ *     },
+ *     false,
+ *     this
  *   });
  * HTML example without data attributes:
  * <div class="js-main-carousel owl-carousel">
@@ -68,10 +74,20 @@
  *
  */
 class Madj2kOwlThumbnail {
-  constructor(mainSelector, thumbSelector, options = {}, debug = false) {
+  /**
+   * Creates a new OwlThumbnail instance
+   * @param {string} mainSelector - CSS selector for main carousel element
+   * @param {string} thumbSelector - CSS selector for thumbnail carousel element
+   * @param {Object} options - Configuration options
+   * @param {boolean} debug - Enables debug logging
+   * @param {Document} container - DOM container to use for event listeners
+   */
+  constructor(mainSelector, thumbSelector, options = {}, debug = false, container = document) {
     this.debug = debug;
-    this.$main = $(mainSelector);
-    this.$thumbs = $(thumbSelector);
+
+    this.$context = $(container);
+    this.$main = this.$context.find(mainSelector);
+    this.$thumbs = this.$context.find(thumbSelector);
     this.options = options;
     this.syncing = false;
 
