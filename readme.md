@@ -168,7 +168,7 @@ Init with available options:
 import { Madj2kScrolling } from '@madj2k/frontend-kit/tools/scrolling';
 const scrolling = new Madj2kScrolling({
     anchorScrolling: {
-      selector: ['a[href^="#"]'],
+      selector: ['a[href^="#"]', 'a[href*="#"]'],
       offsetSelector: null,
       disableSelector: '.js-no-scroll',
       collapsibleSelector: ['.collapse'],

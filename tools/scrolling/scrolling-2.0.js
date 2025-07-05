@@ -12,7 +12,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.3
+ * @version 2.0.4
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -24,7 +24,7 @@
  * // Initialize with custom config
  * const scrolling = new Madj2kScrolling({
  *     anchorScrolling: {
- *       selector: ['a[href*="#"]'],
+ *       selector: ['a[href^="#"]', 'a[href*="#"]'],
  *       offsetSelector: null,
  *       disableSelector: '.js-no-scroll',
  *       collapsibleSelector: ['.collapse'],
@@ -73,7 +73,7 @@
 class Madj2kScrolling {
   config = {
     anchorScrolling: {
-      selector: ['a[href*="#"]'],
+      selector: ['a[href^="#"]', 'a[href*="#"]'],
       offsetSelector: null,
       disableSelector: '.js-no-scroll',
       collapsibleSelector: ['.collapse'],
@@ -235,8 +235,8 @@ class Madj2kScrolling {
       const href = event.currentTarget.getAttribute('href');
       if (!href) return;
 
-      const url = new URL(href, window.location.origin); // wandelt auch relative URLs korrekt um
-      const isSamePage = url.pathname === window.location.pathname;
+      const url = new URL(href, window.location.origin); // also converts relative URLs correctly
+      const isSamePage = (url.pathname === window.location.pathname || href.startsWith("#"));
 
       if (isSamePage && url.hash) {
         event.preventDefault();
