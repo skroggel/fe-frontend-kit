@@ -17,7 +17,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.1
+ * @version 2.0.2
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -138,6 +138,7 @@ class Madj2kOwlThumbnail {
         this._highlightInitialThumb(event);
         this._equalizeThumbnailHeights();
         this._repositionThumbNav();
+        this._updateArrowNav()
       },
       onRefreshed: () => {
         this._equalizeThumbnailHeights();
@@ -260,7 +261,8 @@ class Madj2kOwlThumbnail {
     this._log('Centering thumbnails to index:', centerIndex);
     this.$thumbs.trigger('to.owl.carousel', [centerIndex, 300, true]);
 
-    this._repositionThumbNav(index );
+    this._repositionThumbNav(index);
+    this._updateArrowNav(index)
     this.syncing = false;
   }
 
@@ -299,7 +301,8 @@ class Madj2kOwlThumbnail {
       if ($(e.currentTarget).hasClass('owl-prev')) {
         // Previous slide in main carousel
         newIndex = mainData.relative(mainData.current()) - 1;
-        if (newIndex < 0) newIndex = 0; // Kein Loop
+        if (newIndex < 0)  newIndex = 0; // no loop
+
       } else if ($(e.currentTarget).hasClass('owl-next')) {
         // Next slide in main carousel
         newIndex = mainData.relative(mainData.current()) + 1;
@@ -308,6 +311,29 @@ class Madj2kOwlThumbnail {
 
       this.$main.trigger('to.owl.carousel', [newIndex, 300, true]);
     });
+  }
+
+  /**
+   * Updates the visibility of the navigation arrows based on the current index
+   *
+   * @param index
+   * @private
+   */
+  _updateArrowNav (index = 0) {
+
+    const mainData = this.$main.data('owl.carousel');
+    if (!mainData) return;
+
+    this.$thumbs.find('.owl-prev').removeClass('inactive');
+    this.$thumbs.find('.owl-next').removeClass('inactive');
+
+    if (index === 0) {
+      this.$thumbs.find('.owl-prev').addClass('inactive');
+    }
+
+    if (index === mainData.items().length -1) {
+      this.$thumbs.find('.owl-next').addClass('inactive');
+    }
   }
 
   /**
@@ -328,11 +354,11 @@ class Madj2kOwlThumbnail {
       $thumbStage.css('transform', 'translate3d(0px, 0px, 0px)');
       this._log('Thumb stage repositioned: left-aligned (index 0)');
 
-    // last thumb aligned right
+      // last thumb aligned right
     } else if (currentIndex === lastIndex) {
       let totalWidth = 0;
       $thumbItems.each((i, item) => {
-        totalWidth += $(item).outerWidth(true); // inklusive margin
+        totalWidth += $(item).outerWidth(true); // margin included
       });
 
       const containerWidth = this.$thumbs.width();
