@@ -144,7 +144,7 @@
 
                     /** addition class for usage with position:absolute */
                     #{$wrap-class}-padding {
-                        @include page-padding-only($default-padding);
+                        @include page-padding-only($padding-x);
                     }
                 }
 
