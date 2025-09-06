@@ -19,11 +19,13 @@
 /// @group Typography
 /// @param {Map} $font-formats - A map of font style definitions. Defaults to the global `$font-formats` map.
 /// @param {String} $font-format - The key name of the format to apply (e.g., 'h1', 'copy-small').
+/// @param {String} $tablet-breakpoint - The breakpoint name for tablet styles (default: lg).
+/// @param {String} $desktop-breakpoint - The breakpoint name for desktop styles (default: xl).
 ///
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin font-format($font-formats, $font-format: 'h1') {
+@mixin font-format($font-formats, $font-format: 'h1', $tablet-breakpoint: lg, $desktop-breakpoint: xl) {
     $format-data: map-get($font-formats, $font-format);
     $mobile-data: map-get($format-data, 'mobile');
     $default-data: map-get($format-data, 'default');
@@ -38,7 +40,7 @@
     }
 
     @if map-has-key($format-data, 'tablet') {
-        @include media-breakpoint-up(lg) {
+        @include media-breakpoint-up($tablet-breakpoint) {
             @each $key in $keys {
                 #{$key}: map-get(map-get($format-data, 'tablet'), $key);
             }
@@ -46,9 +48,20 @@
     }
 
     @if map-has-key($format-data, 'desktop') {
-        @include media-breakpoint-up(xl) {
+        @include media-breakpoint-up($desktop-breakpoint) {
             @each $key in $keys {
                 #{$key}: map-get(map-get($format-data, 'desktop'), $key);
+            }
+        }
+    }
+
+    // dynamic breakpoints (but not mobile, default, tablet, desktop)
+    @each $variant, $values in $format-data {
+        @if not index(('mobile', 'default', 'tablet', 'desktop'), $variant) {
+            @include media-breakpoint-up($variant) {
+                @each $key in $keys {
+                    #{$key}: map-get($values, $key);
+                }
             }
         }
     }

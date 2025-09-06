@@ -1,9 +1,9 @@
-#  @madj2k/frontend-kit
+#  @madj2k/fe-frontend-kit
 Reusable frontend toolkit including SCSS mixins and menu components (JS/SCSS).
 
 # #  Installation
 ```
-npm install @madj2k/frontend-kit
+npm install @madj2k/fe-frontend-kit
 ```
 Requirements:
 For SCSS mixins: Bootstrap SCSS (your project needs to install bootstrap and include it in the build)
@@ -17,11 +17,11 @@ For menu components: none
 ##  Usage in your project
 ###  SCSS Mixins
 ```
-@use '@madj2k/frontend-kit' as *;
+@use '@madj2k/fe-frontend-kit' as *;
 ```
 Or import individual mixins:
 ```
-@use '@madj2k/frontend-kit/sass/00_mixins/colors' as *;
+@use '@madj2k/fe-frontend-kit/sass/00_mixins/colors' as *;
 ```
 ###  Menu components (JS and SCSS):
 Each menu component can be used separately.
@@ -32,7 +32,7 @@ with opening and closing animation and optional cookie persistence.
 
 Init:
 ```
-import { Madj2kBanner } from '@madj2k/frontend-kit/tools/banner';
+import { Madj2kBanner } from '@madj2k/fe-frontend-kit/tools/banner';
 const banner = new Madj2kBanner({
   bannerId: 'my-banner',
   activeClass: 'active',
@@ -138,7 +138,7 @@ resize-events during user scrolling on mobile, and respects active input fields 
 
 Init with available options:
 ```
-import { Madj2kBetterResizeEvent } from '@madj2k/frontend-kit/tools/better-resize-event';
+import { Madj2kBetterResizeEvent } from '@madj2k/fe-frontend-kit/tools/better-resize-event';
 const betterResizeEvent = new Madj2kBetterResizeEvent({
     resizeEndTimeout: 300,
     scrollingEndTimeout: 600,
@@ -165,7 +165,7 @@ where elements can be added, removed or re-ordered dynamically.
 
 Init with available options:
 ```
-import { Madj2kScrolling } from '@madj2k/frontend-kit/tools/scrolling';
+import { Madj2kScrolling } from '@madj2k/fe-frontend-kit/tools/scrolling';
 const scrolling = new Madj2kScrolling({
     anchorScrolling: {
       selector: ['a[href^="#"]', 'a[href*="#"]'],
@@ -200,7 +200,7 @@ and allows overlays to be closed externally via a custom event.
 
 Init with available options:
 ```
-import { Madj2kToggledOverlay } from '@madj2k/frontend-kit/tools/toggled-overlay';
+import { Madj2kToggledOverlay } from '@madj2k/fe-frontend-kit/tools/toggled-overlay';
 const overlayToggle = new Madj2kToggledOverlay('.js-toggled-overlay');
 ```
 
@@ -223,14 +223,22 @@ HTML:
 Integrate the CSS- and JS-file into your project. Make sure jQuery is included.
 Then init the menu with
 ```
-import { Madj2kFlyoutMenu } from '@madj2k/frontend-kit/menus/flyout-menu';
+import { Madj2kFlyoutMenu } from '@madj2k/fe-frontend-kit/menus/flyout-menu';
 document.querySelectorAll('.js-flyout-toggle').forEach((el) => {
   new Madj2kFlyoutMenu(el, { animationDuration: 800 });
 });
 ```
+Optional for automatically closing of the flyout menu resizing the browser window:
+```
+import { Madj2kBetterResizeEvent } from '@madj2k/fe-frontend-kit/tools/better-resize-event';
+document.addEventListener('madj2k-better-resize-event', () => {
+    document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
+});
+```
+
 CSS:
 ```
-@use '@madj2k/frontend-kit/menus/flyout-menu' as *;
+@use '@madj2k/fe-frontend-kit/menus/flyout-menu' as *;
 ```
 
 ## Basic HTML
@@ -275,7 +283,7 @@ Otherwise in the opened menu the scrolling won't work.
 ```
 Then we deactivate the fullHeight of the flyout menu and make the blurry background clickable
 ```
-import { Madj2kFlyoutdownMenu } from '@madj2k/frontend-kit/menus/flyout-menu';
+import { Madj2kFlyoutdownMenu } from '@madj2k/fe-frontend-kit/menus/flyout-menu';
 document.querySelectorAll('.js-flyout-toggle').forEach((el) => {
   new Madj2kFlyoutMenu(el, { fullHeight: false });
 });
@@ -329,14 +337,22 @@ html,body {
 Integrate the CSS- and JS-file into your project. Make sure jQuery is included.
 Then init the menu with
 ```
-import { Madj2kPulldownMenu } from '@madj2k/frontend-kit/menus/pulldown-menu';
+import { Madj2kPulldownMenu } from '@madj2k/fe-frontend-kit/menus/pulldown-menu';
 document.querySelectorAll('.js-pulldown-toggle').forEach((el) => {
   new Madj2kPulldownMenu(el);
 });
 ```
+Optional for automatically closing of the flyout menu resizing the browser window:
+```
+import { Madj2kBetterResizeEvent } from '@madj2k/fe-frontend-kit/tools/better-resize-event';
+document.addEventListener('madj2k-better-resize-event', () => {
+    document.dispatchEvent(new CustomEvent('madj2k-pulldownmenu-close'));
+});
+```
+
 CSS:
 ```
-@use '@madj2k/frontend-kit/menus/pulldown-menu' as *;
+@use '@madj2k/fe-frontend-kit/menus/pulldown-menu' as *;
 ```
 
 ## Basic HTML

@@ -371,15 +371,17 @@ class Madj2kFlyoutMenu {
    * Adjusts menu padding based on settings
    */
   paddingMenu() {
+
     if (!this.settings.$paddingReference) return;
     if (this.settings.paddingBehavior === 0) return;
-    if (this.settings.paddingBehavior === 1 && this.settings.$menuInner.hasAttribute('data-padding-set')) return;
+    // should be re-evaluated on a resize event after re-opening the menu
+    // if (this.settings.paddingBehavior === 1 && this.settings.$menuInner.hasAttribute('data-padding-set')) return;
 
     let left = this.settings.$paddingReference.getBoundingClientRect().left;
     if (window.innerWidth < this.settings.paddingViewPortMinWidth) left = 0;
 
     this.settings.$menuInner.style.paddingLeft = `${left}px`;
-    this.settings.$menuInner.setAttribute('data-padding-set', 'true');
+    // this.settings.$menuInner.setAttribute('data-padding-set', 'true');
   }
 
   /**

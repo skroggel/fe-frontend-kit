@@ -18,6 +18,7 @@
     }
 
     &.opening {
+        z-index: 891;
         .flyout-container {
             pointer-events: none;
         }
