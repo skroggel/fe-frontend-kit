@@ -234,6 +234,7 @@ class Madj2kFlyoutMenu {
     if (!$menu.classList.contains(openStatusClass) && !$menu.classList.contains(animationOpenStatusClass)) {
       document.dispatchEvent(new CustomEvent('madj2k-slidemenu-close'));
       document.dispatchEvent(new CustomEvent('madj2k-pulldownmenu-close'));
+      document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
       document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-opening'));
 
       this.toggleNoScroll();
