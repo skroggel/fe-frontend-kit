@@ -294,13 +294,6 @@ document.querySelector('.js-background-blur').addEventListener('click', function
 * And we need this additional CSS:
 ```
 /**
- * Prevent jumping because of scrollbar
- */
-html,body {
-    min-height: 100.1%;
-}
-
-/**
  * background-blur for opened flyout
  */
 .background-blur {

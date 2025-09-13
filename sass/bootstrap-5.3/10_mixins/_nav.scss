@@ -268,10 +268,23 @@
 /// @param {Color} $icon-color - Icon color (e.g., fill or text color). Defaults to `$color-primary`.
 /// @param {Map} $icon-mappings - Map of icon toggle states (e.g., hamburger → close). Defaults to a predefined map.
 ///
-/// @example html
+/// @example html with icon font
 ///   <button class="nav-toggle" aria-expanded="false">
-///     <i class="nav-toggle-icon icon-hamburger"></i>
+///     <i class="nav-toggle-icon icon-hamburger icon"></i>
 ///   </button>
+///
+/// @example html with icon sprite
+///   <button class="nav-toggle" aria-expanded="false">
+///     <i class="nav-toggle-icon">
+///         <svg class="nav-toggle-icon-opened" aria-hidden="true" focusable="false">
+///             <use href="sprite.svg#search"></use>
+///         </svg>
+///         <svg class="nav-toggle-icon-closed" aria-hidden="true" focusable="false">
+///             <use href="sprite.svg#close"></use>
+///         </svg>
+///     </i>
+///   </button>
+///
 ///
 /// @example scss
 ///   .nav-toggle {
@@ -305,6 +318,7 @@
         display: flex;
         align-items: center;
 
+        // variant with icons as font
         &[aria-expanded="true"] {
             @each $icon-class, $content in $icon-mappings {
                 .#{$icon-class} {
@@ -314,11 +328,30 @@
                 }
             }
         }
+
+        // variant with icons in a sprite
+        .nav-toggle-icon-opened {
+            display: none;
+        }
+
+        &[aria-expanded="true"] {
+            .nav-toggle-icon-opened {
+                display: inline-block;
+            }
+            .nav-toggle-icon-closed {
+                display: none;
+            }
+        }
     }
 
-    &-icon {
+    &-icon:not(:has(svg)),
+    &-icon svg {
         font-size: rem-calc($icon-size);
         width: rem-calc($icon-size);
         color: $icon-color;
+    }
+
+    &-icon svg {
+        height: 100%;
     }
 }

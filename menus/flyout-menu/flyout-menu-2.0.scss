@@ -1,3 +1,7 @@
+html, body {
+    height: 100.1%; // enforce scrollbar
+}
+
 .flyout {
     position: absolute;
     left: 0;
@@ -5,12 +9,18 @@
 
     width: 100%;
     z-index: -1;
-    overflow:hidden;
+    overflow: hidden;
     visibility: hidden;
+    max-height: 0;
+
+    &.calculate {
+        max-height: none;
+    }
 
     &.open {
         z-index: 890;
         visibility: visible;
+        max-height: none;
 
         .flyout-container {
             pointer-events: auto;

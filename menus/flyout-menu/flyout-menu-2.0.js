@@ -49,6 +49,7 @@ class Madj2kFlyoutMenu {
       menuCloseClass: "js-flyout-close",
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
+      heightCalculationClass: 'calculate',
       heightMode: 'full',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
@@ -230,7 +231,9 @@ class Madj2kFlyoutMenu {
    * Opens the flyout menu
    */
   open() {
-    const {$menu, $element, animationOpenStatusClass, openStatusClass} = this.settings;
+    const {$menu, $element, animationOpenStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix} = this.settings;
+    const $body = document.body;
+
     if (!$menu.classList.contains(openStatusClass) && !$menu.classList.contains(animationOpenStatusClass)) {
       document.dispatchEvent(new CustomEvent('madj2k-slidemenu-close'));
       document.dispatchEvent(new CustomEvent('madj2k-pulldownmenu-close'));
@@ -244,7 +247,8 @@ class Madj2kFlyoutMenu {
       $menu.classList.add(openStatusClass, animationOpenStatusClass);
       $element.classList.add(openStatusClass, animationOpenStatusClass);
       $element.setAttribute('aria-expanded', true);
-      document.body.classList.add(`${this.settings.animationBodyClassPrefix}-${animationOpenStatusClass}`);
+      $body.classList.add(openStatusBodyClass);
+      $body.classList.add(`${animationBodyClassPrefix}-${animationOpenStatusClass}`);
 
       this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
       this.settings.$menuContainer.style.top = '0';
@@ -252,7 +256,7 @@ class Madj2kFlyoutMenu {
       setTimeout(() => {
         $menu.classList.remove(animationOpenStatusClass);
         $element.classList.remove(animationOpenStatusClass);
-        document.body.classList.remove(`${this.settings.animationBodyClassPrefix}-${animationOpenStatusClass}`);
+        $body.classList.remove(`${animationBodyClassPrefix}-${animationOpenStatusClass}`);
         document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-opened'));
       }, this.settings.animationDuration);
     }
@@ -284,17 +288,20 @@ class Madj2kFlyoutMenu {
    * Closes the flyout menu
    */
   close() {
-    const {$menu, $element, animationCloseStatusClass, openStatusClass} = this.settings;
+    const {$menu, $element, animationCloseStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix} = this.settings;
+    const $body = document.body;
+
     if ($menu.classList.contains(openStatusClass) && !$menu.classList.contains(animationCloseStatusClass)) {
       document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-closing'));
 
+      this.toggleNoScroll();
+
       $menu.classList.add(animationCloseStatusClass);
       $element.classList.add(animationCloseStatusClass);
-      document.body.classList.add(`${this.settings.animationBodyClassPrefix}-${animationCloseStatusClass}`);
       $element.classList.remove(openStatusClass);
       $element.setAttribute('aria-expanded', false);
-
-      this.toggleNoScroll();
+      $body.classList.add(`${animationBodyClassPrefix}-${animationCloseStatusClass}`);
+      $body.classList.remove(openStatusBodyClass);
 
       this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
       this.settings.$menuContainer.style.top = '-100%';
@@ -302,7 +309,7 @@ class Madj2kFlyoutMenu {
       setTimeout(() => {
         $menu.classList.remove(openStatusClass, animationCloseStatusClass);
         $element.classList.remove(animationCloseStatusClass);
-        document.body.classList.remove(`${this.settings.animationBodyClassPrefix}-${animationCloseStatusClass}`);
+        $body.classList.remove(`${animationBodyClassPrefix}-${animationCloseStatusClass}`);
         document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-closed'));
       }, this.settings.animationDuration);
     }
@@ -334,28 +341,40 @@ class Madj2kFlyoutMenu {
       console.warn('Option "fullHeight" is deprecated. Please use "heightMode" instead.');
     }
 
-    let height = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
+    // remove max-height for correct calculation
+    this.settings.$menu.classList.add(this.settings.heightCalculationClass);
+
+    const innerHeight = this.settings.$menuInner.offsetHeight || this.settings.$menu.offsetHeight;
     const refObj = this.settings.$positionReference || this.$element;
     const refPos = refObj.getBoundingClientRect();
-    const flyoutTop = refPos.top + refObj.offsetHeight;
+    const refHeight = refObj.offsetHeight;
+    const flyoutTop = refPos.top + refHeight;
+    let newHeight = '';
 
     // heightMode "full" with deprecated fullHeight-setting as fallback
     if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
+
+      // we use the viewport height because it may be the case that accordions are used here
       const viewPortHeight = window.innerHeight;
-      if (height < viewPortHeight) {
-        this.settings.$menu.style.height = `calc(100vh + ${flyoutTop}px)`;
+      if (innerHeight < (viewPortHeight - flyoutTop)) {
+        newHeight = `calc(100vh - ${flyoutTop}px)`;
       } else {
-        this.settings.$menu.style.height = `${height}px`;
+        newHeight = `${innerHeight}px`;
       }
 
     } else if (this.settings.heightMode === 'maxContent') {
-      this.settings.$menu.style.height = `max-content`;
+      newHeight = `max-content`;
       console.warn('heightMode: maxContent is not working on Apple Safari. Please use heightMode: full instead.');
 
     } else {
-      this.settings.$menu.style.height = `${height}px`;
+      newHeight = `${innerHeight}px`;
     }
+
+    // set max-height again so that longer flyouts do not lead to scrolling on smaller ones
+    this.settings.$menu.classList.remove(this.settings.heightCalculationClass);
+    this.settings.$menu.style.height = newHeight;
   }
+
 
   /**
    * Positions the menu based on the reference element
@@ -406,28 +425,33 @@ class Madj2kFlyoutMenu {
    * Toggles scroll behavior of the page
    */
   toggleNoScroll() {
-    const body = document.body;
-    const helper = body.querySelector('.no-scroll-helper');
-    const inner = body.querySelector('.no-scroll-helper-inner');
-    let noScrollClass = this.settings.openStatusBodyClass;
 
-    if (document.documentElement.scrollHeight > window.innerHeight) {
-      noScrollClass += ' ' + this.settings.openStatusBodyClassOverflow;
-    }
+    // heightMode "full" with deprecated fullHeight-setting as fallback
+    if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
+      const body = document.body;
+      const helper = body.querySelector('.no-scroll-helper');
+      const inner = body.querySelector('.no-scroll-helper-inner');
+      let noScrollClass ='';
 
-    if (!body.classList.contains(this.settings.openStatusBodyClass)) {
-      const scrollTop = -document.documentElement.scrollTop;
-      helper.setAttribute('data-scroll-top', scrollTop);
-      helper.style.cssText = 'position:relative;overflow:hidden;height:100vh;width:100%';
-      inner.style.cssText = `position:absolute;top:${scrollTop}px;height:100%;width:100%`;
-      body.classList.add(...noScrollClass.split(' '));
-      window.scrollTo({top: 0, behavior: 'instant'});
-    } else {
-      const scrollTop = parseInt(helper.getAttribute('data-scroll-top') || '0') * -1;
-      helper.removeAttribute('style');
-      inner.removeAttribute('style');
-      body.classList.remove(this.settings.openStatusBodyClass, this.settings.openStatusBodyClassOverflow);
-      window.scrollTo({top: scrollTop, behavior: 'instant'});
+      if (document.documentElement.scrollHeight > window.innerHeight) {
+        noScrollClass = this.settings.openStatusBodyClassOverflow;
+      }
+
+      if (!body.classList.contains(this.settings.openStatusBodyClass)) {
+        const scrollTop = -document.documentElement.scrollTop;
+        helper.setAttribute('data-scroll-top', scrollTop);
+        helper.style.cssText = 'position:relative;overflow:hidden;height:100vh;width:100%';
+        inner.style.cssText = `position:absolute;top:${scrollTop}px;height:100%;width:100%`;
+        body.classList.add(noScrollClass);
+        window.scrollTo({top: 0, behavior: 'instant'});
+      } else {
+        const scrollTop = parseInt(helper.getAttribute('data-scroll-top') || '0') * -1;
+        helper.removeAttribute('style');
+        inner.removeAttribute('style');
+        body.classList.remove(this.settings.openStatusBodyClassOverflow);
+        window.scrollTo({top: scrollTop, behavior: 'instant'});
+      }
+
     }
   }
 }
