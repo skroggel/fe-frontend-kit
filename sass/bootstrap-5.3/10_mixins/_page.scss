@@ -93,15 +93,32 @@
     $version: 1,
 ) {
 
+    /** addition class which simply contains the normal padding */
+    #{$padding-class}-padding {
+        @include page-padding-only($default-padding, 'full');
+    }
+
+    /** default settings without breakpoint in class-name, but with different paddings/margins depending on breakpoint */
+    @each $breakpoint, $padding-x in $page-padding {
+        @include media-breakpoint-up($breakpoint) {
+            /** addition class which simply contains the normal padding */
+            #{$padding-class}-padding {
+                @include page-padding-only($padding-x, 'full');
+            }
+
+            body {
+                /** addition class which simply contains the normal padding */
+                #{$padding-class}-#{$breakpoint}-padding {
+                    @include page-padding-only($padding-x, 'full');
+                }
+            }
+        }
+    }
+
     #{$page-wrap-class} {
 
         /** default settings without breakpoints **/
         @include page-padding-only($default-padding);
-
-        /** addition class which simply contains the normal padding */
-        #{$padding-class}-padding {
-            @include page-padding-only($default-padding, 'full');
-        }
 
         /** for usage as wrap around a container */
         #{$wrap-class}-1 {
@@ -138,16 +155,13 @@
                 @include page-padding-only-reset();
             }
         }
+    }
 
-        /** default settings without breakpoint in class-name, but with different paddings/margins depending on breakpoint */
-        @each $breakpoint, $padding-x in $page-padding {
+    /** default settings without breakpoint in class-name, but with different paddings/margins depending on breakpoint */
+    @each $breakpoint, $padding-x in $page-padding {
+        @include media-breakpoint-up($breakpoint) {
 
-            @include media-breakpoint-up($breakpoint) {
-
-                /** addition class which simply contains the normal padding */
-                #{$padding-class}-padding {
-                    @include page-padding-only($padding-x, 'full');
-                }
+            #{$page-wrap-class} {
 
                 /** for usage as wrap around a container */
                 #{$wrap-class}-1 {
@@ -170,12 +184,12 @@
 
                 /** reset */
                 #{$wrap-class}-0,
-                .row #{$wrap-class}-0{
+                .row #{$wrap-class}-0 {
                     @include page-padding-row-reset();
                 }
 
                 #{$wrap-class}-0 {
-                    #{$wrap-class}-inner{
+                    #{$wrap-class}-inner {
                         @include page-padding-inner-reset();
                     }
 
@@ -185,13 +199,10 @@
                     }
                 }
             }
-        }
-    }
 
-    /** specific settings for classes with breakpoints in names. Has to be dominant */
-    @each $breakpoint, $padding-x in $page-padding {
-        @include media-breakpoint-up($breakpoint) {
 
+            /** ==================================================================================== */
+            /** specific settings for classes with breakpoints in names. Has to be dominant */
             /** ensure dominance with body-prefix */
             body #{$page-wrap-class} {
 
