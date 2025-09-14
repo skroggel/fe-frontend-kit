@@ -16,11 +16,11 @@
  *
  * @example
  * // Initialize with defaults
- * const slider = new Madj2kSimpleFadeSlider('.js-fade-sliderr');
+ * const slider = new Madj2kSimpleFadeSlider('.js-fade-slider');
  *
  * @example
  * // Initialize with custom config
- * const slider = new Madj2kSimpleFadeSlider('.js-fade-sliderr', {
+ * const slider = new Madj2kSimpleFadeSlider('.js-fade-slider', {
  *   duration: 8,
  *   classSlide: 'fade-slider-item',
  *   classVisible: 'is-visible',
@@ -29,7 +29,7 @@
  *
  * @example
  * // Example HTML
- * <section class="fade-slider js-fade-sliderr" aria-label="Image gallery">
+ * <section class="fade-slider js-fade-slider" aria-label="Image gallery">
  *   <div class="fade-slider-item"><img src="img1.jpg" alt="Description 1"></div>
  *   <div class="fade-slider-item"><img src="img2.jpg" alt="Description 2"></div>
  *   <div class="fade-slider-item"><img src="img3.jpg" alt="Description 3"></div>
@@ -60,7 +60,7 @@
 class Madj2kSimpleFadeSlider {
   config = {
     duration: 12,
-    classSlide: 'fade-slide',
+    classSlide: 'fade-slider-item',
     classVisible: 'is-visible',
     debug: false
   };
