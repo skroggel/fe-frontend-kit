@@ -10,21 +10,29 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 1.0.0
+ * @version 1.1.0
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  * @example
- * // Initialize with defaults
- * const slider = new Madj2kSimpleFadeSlider('.js-fade-slider');
+ * // Initialize with a single DOM element
+ * const el = document.querySelector('.js-fade-slider');
+ * const slider = new Madj2kSimpleFadeSlider(el);
  *
  * @example
  * // Initialize with custom config
- * const slider = new Madj2kSimpleFadeSlider('.js-fade-slider', {
+ * const el = document.querySelector('.js-fade-slider');
+ * const slider = new Madj2kSimpleFadeSlider(el, {
  *   duration: 8,
  *   classSlide: 'fade-slider-item',
  *   classVisible: 'is-visible',
  *   debug: true
+ * });
+ *
+ * @example
+ * // Initialize multiple sliders with forEach
+ * document.querySelectorAll('.js-fade-slider').forEach((el) => {
+ *   new Madj2kSimpleFadeSlider(el, { duration: 6 });
  * });
  *
  * @example
@@ -66,16 +74,20 @@ class Madj2kSimpleFadeSlider {
   };
 
   /**
-   * @param {string} selector - CSS selector for the slider container
+   * @param {HTMLElement} container - DOM element for the slider container
    * @param {Object} config - configuration options
    * @param {number} [config.duration=12] - time in seconds between slide changes
-   * @param {string} [config.classSlide='fade-slide'] - class for each slide
+   * @param {string} [config.classSlide='fade-slider-item'] - class for each slide
    * @param {string} [config.classVisible='is-visible'] - class for visible slide
    * @param {boolean} [config.debug=false] - enable debug logging
    */
-  constructor(selector, config = {}) {
-    this.container = document.querySelector(selector);
-    if (!this.container) return;
+  constructor(container, config = {}) {
+    if (!(container instanceof HTMLElement)) {
+      console.warn('[Madj2kSimpleFadeSlider] No valid container element provided.');
+      return;
+    }
+
+    this.container = container;
 
     this.config = {
       ...this.config,

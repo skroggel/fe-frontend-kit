@@ -402,11 +402,13 @@ A lightweight fade slider using opacity and z-index.
 Init with available options:
 ```
 import { Madj2kSimpleFadeSlider } from '@madj2k/fe-frontend-kit/tools/simple-fade-slider';
-const fadeSlider = new Madj2kSimpleFadeSlider('.js-fade-slider', {
-    duration: 8,
-    classSlide: 'fade-slider-item',
-    classVisible: 'is-visible',
-    debug: true
+document.querySelectorAll('.js-fade-slider').forEach((el) => {
+    new Madj2kSimpleFadeSlider(el, {
+        duration: 8,
+        classSlide: 'fade-slider-item',
+        classVisible: 'is-visible',
+        debug: true
+    });
 });
 ```
 
