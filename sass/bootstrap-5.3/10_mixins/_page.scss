@@ -90,11 +90,13 @@
     $wrap-class: '.fullwidth',
     $default-padding: 16px,
     $padding-class: $page-wrap-class,
-    $version: 1,
 ) {
 
     /** addition class which simply contains the normal padding */
     #{$padding-class}-padding {
+        @include page-padding-only($default-padding);
+    }
+    #{$padding-class}-padding-full {
         @include page-padding-only($default-padding, 'full');
     }
 
@@ -103,12 +105,18 @@
         @include media-breakpoint-up($breakpoint) {
             /** addition class which simply contains the normal padding */
             #{$padding-class}-padding {
+                @include page-padding-only($padding-x);
+            }
+            #{$padding-class}-padding-full {
                 @include page-padding-only($padding-x, 'full');
             }
 
             body {
                 /** addition class which simply contains the normal padding */
                 #{$padding-class}-#{$breakpoint}-padding {
+                    @include page-padding-only($padding-x);
+                }
+                #{$padding-class}-#{$breakpoint}-padding-full {
                     @include page-padding-only($padding-x, 'full');
                 }
             }
@@ -206,11 +214,8 @@
             /** ensure dominance with body-prefix */
             body #{$page-wrap-class} {
 
-                // seems to be a bug in older version. But we keep it for compatibility
-                @if ($version < 2) {
-                    padding-left: $padding-x - math.div($grid-gutter-width, 2);
-                    padding-right: $padding-x - math.div($grid-gutter-width, 2);
-                }
+                padding-left: $padding-x - math.div($grid-gutter-width, 2);
+                padding-right: $padding-x - math.div($grid-gutter-width, 2);
 
                 /** addition class which simply contains the normal padding */
                 #{$padding-class}-#{$breakpoint}-padding {
