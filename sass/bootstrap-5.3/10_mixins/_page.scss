@@ -23,9 +23,12 @@
 ///
 /// @group Layout
 ///
+/// @param {Map} $page-padding - A map of breakpoint names to padding values for responsive control. Defaults to predefined breakpoint-based paddings.
 /// @param {String} $page-wrap-class - The base class used to wrap the entire page (for context-aware styling). Defaults to `'.page'`.
 /// @param {String} $wrap-class - The base utility class prefix for full-width behavior. Defaults to `'.fullwidth'`.
 /// @param {Length} $default-padding - The default horizontal padding applied when full-width is active. Defaults to `16px`.
+/// @param {String} $padding-class - The class prefix used for standalone padding utilities. Defaults to `$page-wrap-class`.
+/// @param {Number} $version - Version number for compatibility handling. Defaults to `1`.
 ///
 /// @example html
 ///   <!-- 1) Around a Bootstrap container -->
@@ -85,7 +88,9 @@
     ),
     $page-wrap-class: '.page',
     $wrap-class: '.fullwidth',
-    $default-padding: 16px
+    $default-padding: 16px,
+    $padding-class: $page-wrap-class,
+    $version: 1,
 ) {
 
     #{$page-wrap-class} {
@@ -93,7 +98,12 @@
         /** default settings without breakpoints **/
         @include page-padding-only($default-padding);
 
-         /** for usage as wrap around a container */
+        /** addition class which simply contains the normal padding */
+        #{$padding-class}-padding {
+            @include page-padding-only($default-padding, 'full');
+        }
+
+        /** for usage as wrap around a container */
         #{$wrap-class}-1 {
             @include page-padding-container($default-padding);
 
@@ -134,6 +144,11 @@
 
             @include media-breakpoint-up($breakpoint) {
 
+                /** addition class which simply contains the normal padding */
+                #{$padding-class}-padding {
+                    @include page-padding-only($padding-x, 'full');
+                }
+
                 /** for usage as wrap around a container */
                 #{$wrap-class}-1 {
                     @include page-padding-container($padding-x);
@@ -155,9 +170,9 @@
 
                 /** reset */
                 #{$wrap-class}-0,
-               .row #{$wrap-class}-0{
+                .row #{$wrap-class}-0{
                     @include page-padding-row-reset();
-               }
+                }
 
                 #{$wrap-class}-0 {
                     #{$wrap-class}-inner{
@@ -179,8 +194,17 @@
 
             /** ensure dominance with body-prefix */
             body #{$page-wrap-class} {
-                padding-left: $padding-x - math.div($grid-gutter-width, 2);
-                padding-right: $padding-x - math.div($grid-gutter-width, 2);
+
+                // seems to be a bug in older version. But we keep it for compatibility
+                @if ($version < 2) {
+                    padding-left: $padding-x - math.div($grid-gutter-width, 2);
+                    padding-right: $padding-x - math.div($grid-gutter-width, 2);
+                }
+
+                /** addition class which simply contains the normal padding */
+                #{$padding-class}-#{$breakpoint}-padding {
+                    @include page-padding-only($padding-x, 'full');
+                }
 
                 /** for usage as wrap around a container */
                 #{$wrap-class}-#{$breakpoint}-1 {
@@ -212,9 +236,14 @@
     }
 }
 
-@mixin page-padding-only ($padding-x) {
-    padding-left: $padding-x - math.div($grid-gutter-width, 2);
-    padding-right: $padding-x - math.div($grid-gutter-width, 2);
+@mixin page-padding-only ($padding-x, $variant: 'default') {
+    @if ($variant == 'full') {
+        padding-left: $padding-x;
+        padding-right: $padding-x;
+    } @else {
+        padding-left: $padding-x - math.div($grid-gutter-width, 2);
+        padding-right: $padding-x - math.div($grid-gutter-width, 2);
+    }
 }
 
 @mixin page-padding-container ($padding-x) {
@@ -230,7 +259,6 @@
     margin-left: $padding-x * -1 + math.div($grid-gutter-width, 2);
     margin-right: $padding-x * -1 + math.div($grid-gutter-width, 2);
     overflow: hidden;
-
     /*
     $additionalWidth: $padding-x * 2;
     width: calc(100% + $additionalWidth);
