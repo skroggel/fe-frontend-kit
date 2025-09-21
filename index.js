@@ -6,6 +6,7 @@ export { Madj2kResizeEnd } from './tools/resize-end';
 export { Madj2kScrolling } from './tools/scrolling';
 export { Madj2kSimpleFadeSlider } from './tools/simple-fade-slider';
 export { Madj2kToggledOverlay } from './tools/toggled-overlay';
+export { Madj2kElementInViewport } from './tools/element-in-viewport';
 
 // Menus
 export { Madj2kFlyoutMenu } from './menus/flyout-menu';

@@ -366,6 +366,52 @@ Usage with Appear-On-Scroll (HTML):
 </div>
 ```
 
+# JS: Element In Viewport
+A lightweight helper class that adds a configurable class to any DOM element once it becomes visible in the viewport.
+Perfect for triggering CSS-based animations (e.g., quote reveals, fade-ins, transitions) when an element enters view.
+* Works with IntersectionObserver API
+* Purely DOM-based (no keyframes required)
+* Fully configurable (threshold, delay, class)
+* Ideal for CMS-driven content (dynamic DOM)
+* Designed for performance and flexibility
+
+Init:
+```
+document.querySelectorAll('.js-inview').forEach((el) => {
+    new Madj2kElementInViewport(el, {
+        visibleClass: 'is-in-viewport',
+        threshold: 0.5,
+        debug: false
+    });
+});
+```
+
+HTML-Example
+```
+<section class="my-element js-inview">
+    <div class="my-element-content">Lorem ipsum dolor sit amet.</div>
+</section>
+```
+
+SCSS-Example
+```
+.my-element {
+    .my-element-content {
+        opacity: 0;
+        transform: translateY(20%);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    &.is-in-viewport {
+        .my-element-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+```
+
+
 # JS: Toggled Overlay
 This class toggles the visibility of any target element referenced by the `aria-controls`
 attribute of a trigger element (button, link, etc.). It manages ARIA attributes for accessibility

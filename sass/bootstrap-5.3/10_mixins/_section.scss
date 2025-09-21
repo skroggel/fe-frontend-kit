@@ -43,6 +43,15 @@
 ///     [...]
 ///   </div>
 ///
+/// @example html
+///   <div class="csp-section">
+///     [...]
+///   </div>
+///   <!-- With vertical padding instead of margin -->
+///   <div class="csp-section csp-section-padding">
+///     [...]
+///   </div>
+///
 /// @example scss
 ///   .layout-default {
 ///     @include section-spacing();
@@ -56,6 +65,7 @@
     $block-class: 'csp-block',
     $not-last-class: 'csp-not-last',
     $utility-append-class: 'sp',
+    $padding-append-class: 'padding',
     $csp-blocks: (
         'text',
         'text-image',
@@ -101,8 +111,16 @@
             }
 
             .#{$section-class}.#{$not-last-class}:not(:has(+ .#{$section-class})),
+            .#{$section-class}.#{$section-class}-#{$padding-append-class},
+            .#{$section-class}:has(+ .#{$section-class}-#{$padding-append-class}),
             .#{$section-class}-#{$utility-append-class}.#{$not-last-class}:not(:has(+ .#{$section-class})) {
                 margin-bottom: 0;
+            }
+
+            .#{$section-class}-#{$padding-append-class},
+            .#{$section-class}-#{$padding-append-class}-#{$utility-append-class} {
+                padding-top: rem-calc($spacer-section);
+                padding-bottom: rem-calc($spacer-section);
             }
         }
 
