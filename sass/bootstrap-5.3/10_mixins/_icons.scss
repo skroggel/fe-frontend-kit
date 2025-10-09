@@ -91,8 +91,12 @@
 ///
 /// @license
 /// GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+/// @deprecated
 ///
 @mixin toggle-icon($selector: '.toggle') {
+
+    @warn "toggle-icon() is deprecated. Use toggle() instead.";
+
     #{$selector}:has(.icon:first-child) {
         line-height: 1; // icon-only toggle buttons
     }

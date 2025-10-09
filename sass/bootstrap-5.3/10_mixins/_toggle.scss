@@ -1,0 +1,141 @@
+
+/* ==================================================
+* Toggle
+* ==================================================*/
+/// Creates a button group container for toggles.
+///
+/// Used to align toggle buttons and icons horizontally with spacing.
+/// Useful in responsive navigation headers.
+///
+/// @group Toggle
+///
+/// @param {Length} $gap - The spacing between toggle elements. Defaults to `$spacer`.
+///
+/// @example html
+///   <div class="toggle-group">
+///     <button class="toggle" aria-expanded="false">
+///       <i class="toggle-icon icon-hamburger"></i>
+///     </button>
+///   </div>
+///
+/// @example scss
+///   .toggle-group {
+///     @include toggle-group($gap: 1rem);
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin toggle-group(
+    $gap: 16px
+) {
+    display: flex;
+    align-items: center;
+    gap: rem-calc($gap);
+    height: 100%;
+}
+
+
+/// Creates a button element for toggling.
+///
+/// Features:
+/// - Accessible button with `aria-expanded` state
+/// - Icon switching based on toggle state (e.g., hamburger to close)
+/// - Configurable icon size and colors
+/// - No default background or borders for flexible styling
+/// - Built-in accessibility outline
+///
+/// @group Toggle
+///
+/// @param {Length} $icon-size - Size of the icon (width/height). Defaults to `$spacer`.
+/// @param {Color} $icon-color - Icon color (e.g., fill or text color). Defaults to `$color-primary`.
+/// @param {Map} $icon-mappings - Map of icon toggle states (e.g., hamburger → close). Defaults to a predefined map.
+///
+/// @example html with icon font
+///   <button class="toggle" aria-expanded="false">
+///     <i class="toggle-icon icon-hamburger icon"></i>
+///   </button>
+///
+/// @example html with icon sprite
+///   <button class="toggle" aria-expanded="false">
+///     <i class="toggle-icon">
+///         <svg class="toggle-icon-opened" aria-hidden="true" focusable="false">
+///             <use href="sprite.svg#search"></use>
+///         </svg>
+///         <svg class="toggle-icon-closed" aria-hidden="true" focusable="false">
+///             <use href="sprite.svg#close"></use>
+///         </svg>
+///     </i>
+///   </button>
+///
+///
+/// @example scss
+///   .toggle {
+///     @include toggle(
+///       $icon-size: 1.5rem,
+///       $icon-color: #333,
+///       $icon-mappings: (
+///         "icon-hamburger": "icon-close",
+///         "icon-plus": "icon-minus"
+///       )
+///     );
+///   }
+///
+/// @author Steffen Kroggel <developer@steffenkroggel>
+/// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
+///
+@mixin toggle(
+    $icon-size: 16px,
+    $icon-color: var(--bs-primary),
+    $icon-mappings: (
+        "icon-hamburger": unquote('"\\e905"'),
+        "icon-plus": unquote('"\\e908"')
+    ),
+    $icon-selector: '.toggle-icon'
+) {
+    background-color: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+
+    &:has(#{$icon-selector}) {
+        display: flex;
+        align-items: center;
+
+        // variant with icons as font
+        &[aria-expanded="true"] {
+            @each $icon-class, $content in $icon-mappings {
+                .#{$icon-class} {
+                    &:before {
+                        content: $content;
+                    }
+                }
+            }
+        }
+
+        // variant with icons in a sprite
+        #{$icon-selector}-opened {
+            display: none;
+        }
+
+        &[aria-expanded="true"] {
+            #{$icon-selector}-opened {
+                display: inline-block;
+            }
+            #{$icon-selector}-closed {
+                display: none;
+            }
+        }
+    }
+
+    #{$icon-selector}:not(:has(svg)),
+    #{$icon-selector} svg {
+        font-size: rem-calc($icon-size);
+        width: rem-calc($icon-size);
+        color: $icon-color;
+    }
+
+    #{$icon-selector} svg {
+        height: 100%;
+    }
+}

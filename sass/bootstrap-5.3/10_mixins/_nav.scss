@@ -250,6 +250,12 @@
     align-items: center;
     gap: rem-calc($gap);
     height: 100%;
+
+    @warn "nav-toggle-group() is deprecated. Use toggle-group() instead.";
+
+    @include toggle-group(
+        $gap: $gap,
+    );
 }
 
 
@@ -309,49 +315,13 @@
         "icon-plus": unquote('"\\e908"')
     )
 ) {
-    background-color: transparent;
-    border: 0;
-    margin: 0;
-    padding: 0;
 
-    &:has(.nav-toggle-icon) {
-        display: flex;
-        align-items: center;
+    @warn "nav-toggle() is deprecated. Use toggle() instead.";
 
-        // variant with icons as font
-        &[aria-expanded="true"] {
-            @each $icon-class, $content in $icon-mappings {
-                .#{$icon-class} {
-                    &:before {
-                        content: $content;
-                    }
-                }
-            }
-        }
-
-        // variant with icons in a sprite
-        .nav-toggle-icon-opened {
-            display: none;
-        }
-
-        &[aria-expanded="true"] {
-            .nav-toggle-icon-opened {
-                display: inline-block;
-            }
-            .nav-toggle-icon-closed {
-                display: none;
-            }
-        }
-    }
-
-    &-icon:not(:has(svg)),
-    &-icon svg {
-        font-size: rem-calc($icon-size);
-        width: rem-calc($icon-size);
-        color: $icon-color;
-    }
-
-    &-icon svg {
-        height: 100%;
-    }
+    @include toggle(
+        $icon-size: $icon-size,
+        $icon-color: $icon-color,
+        $icon-mappings: $icon-mappings,
+        $icon-selector: '.nav-toggle-icon'
+    );
 }
