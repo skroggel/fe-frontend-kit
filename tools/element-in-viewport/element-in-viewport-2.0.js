@@ -11,7 +11,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 1.0.0
+ * @version 1.0.1
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -34,7 +34,7 @@
  * document.querySelectorAll('.js-element-in-viewport').forEach((el) => {
  *   new Madj2kElementInViewport(el, {
  *     visibleClass: 'is-in-viewport',
- *     threshold: 1
+ *     threshold: 0.5
  *   });
  * });
  */
@@ -63,6 +63,17 @@ class Madj2kElementInViewport {
 
     this.element = element;
     this.config = { ...this.config, ...config };
+
+    const viewportHeight = window.innerHeight;
+    const elementHeight = element.offsetHeight;
+
+    if (elementHeight > viewportHeight) {
+      const adjustedThreshold = (viewportHeight * this.config.threshold) / elementHeight;
+      this._log(
+        `Element taller than viewport. Original threshold ${this.config.threshold} adjusted to ${adjustedThreshold.toFixed(3)}`
+      );
+      this.config.threshold = Math.min(adjustedThreshold, 1);
+    }
 
     this._log('Initialized with config:', this.config);
     this._observe();
