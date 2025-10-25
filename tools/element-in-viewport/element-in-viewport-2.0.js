@@ -8,10 +8,11 @@
  * - Reusable for any type of element (quotes, sections, etc.)
  * - Fully configurable: class name, threshold, delay
  * - Designed for CMS contexts with dynamically loaded content
+ * - Triggers an event that can be used for custom animations
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 1.0.1
+ * @version 1.0.2
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -37,8 +38,14 @@
  *     threshold: 0.5
  *   });
  * });
- */
-
+ *
+ *  @example
+ *  // Event listener
+ *  document.addEventListener('madj2k-element-in-viewport-active', () => {
+ *    // do something
+ *  });
+ *
+ * */
 class Madj2kElementInViewport {
   config = {
     visibleClass: 'is-in-viewport',
@@ -113,6 +120,13 @@ class Madj2kElementInViewport {
     this.element.classList.add(this.config.visibleClass);
     observer.unobserve(this.element);
     this._log(`Class "${this.config.visibleClass}" added.`);
+
+    // Custom event dispatch
+    const event = new CustomEvent('madj2k-element-in-viewport-active');
+    this.element.dispatchEvent(event);
+
+    this._log(`Event fired.`);
+
   }
 
   /**
