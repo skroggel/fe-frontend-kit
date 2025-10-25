@@ -6,6 +6,15 @@
  * 2. Smooth anchor scrolling with optional offset
  * 3. Automatic scrolling when collapsible elements (like Bootstrap .collapse) open
  * 4. Appear-on-scroll animations for elements
+ * 5. Wrapper-based smooth scrolling with easing (BETA-VERSION)
+ *
+ * New in 2.0.4:
+ * - Support for wrapper-based smooth scrolling (config.smoothScroll)
+ * - Nested config normalization for flat CMS field names
+ * - Improved config merging with `enabled` toggles per feature
+ * - Collapse scroll behavior can now be selectively disabled
+ * - Configurable offset via selector for anchor scroll
+ * - Script-controlled blocking of scroll direction classes during auto-scrolling
  *
  * The class is fully configurable via options and is designed to be used in CMS contexts
  * where elements can be added, removed or re-ordered dynamically.
@@ -38,6 +47,12 @@
  *       timeout: 500,
  *       threshold: 25
  *     },
+ *     smoothScroll: {
+ *       enabled: true,
+ *       wrapperClass: '.js-smooth-scroll-wrapper',
+ *       contentClass: '.js-smooth-scroll-content',
+ *       easing: 0.075
+ *     },
  *     debug: false
  * });
  *
@@ -57,22 +72,20 @@
  * </div>
  *
  * @example
- * // Suggested SCSS for appear on scroll:
- * .js-appear-on-scroll {
- *   opacity: 0;
- *   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
- *   transform: translateY(1rem);
- *
- *   &[data-appear-on-scroll="0"] {
- *     opacity: 1;
- *     transform: translateY(0);
- *   }
- * }
+ * // Example HTML for smooth scroll wrapper:
+ * <div class="js-smooth-scroll-wrapper">
+ *   <div class="js-smooth-scroll-content">
+ *     <section>Section 1</section>
+ *     <section>Section 2</section>
+ *     <section>Section 3</section>
+ *   </div>
+ * </div>
  */
 
 class Madj2kScrolling {
   config = {
     anchorScrolling: {
+      enabled: true,
       selector: ['a[href^="#"]', 'a[href*="#"]'],
       offsetSelector: null,
       disableSelector: '.js-no-scroll',
@@ -83,9 +96,19 @@ class Madj2kScrolling {
       threshold: 40
     },
     appearOnScroll: {
+      enabled: true,
       selector: ['.js-appear-on-scroll'],
       timeout: 500,
       threshold: 25
+    },
+    scrollClasses: {
+      enabled: true,
+    },
+    smoothScroll: {
+      enabled: false,
+      easing: 0.075,
+      wrapperClass: '.js-smooth-scroll-wrapper',
+      contentClass: '.js-smooth-scroll-content'
     },
     debug: false
   };
@@ -100,6 +123,8 @@ class Madj2kScrolling {
     // backwards compatibility
     this._normalizeNestedConfig(config, 'anchorScrolling', 'anchorScrolling');
     this._normalizeNestedConfig(config, 'appearOnScroll', 'appearOnScroll');
+    this._normalizeNestedConfig(config, 'scrollClasses', 'scrollClasses');
+    this._normalizeNestedConfig(config, 'smoothScroll', 'smoothScroll');
 
     this.config = {
       ...this.config,
@@ -111,6 +136,14 @@ class Madj2kScrolling {
       appearOnScroll: {
         ...this.config.appearOnScroll,
         ...config.appearOnScroll
+      },
+      scrollClasses: {
+        ...this.config.scrollClasses,
+        ...config.scrollClasses
+      },
+      smoothScroll: {
+        ...this.config.smoothScroll,
+        ...config.smoothScroll
       }
     };
 
@@ -119,9 +152,18 @@ class Madj2kScrolling {
 
     this._log('Initialized with config:', this.config);
 
-    this.initScrollClassesForBody();
-    this.initAnchorScrolling();
-    this.initAppearOnScroll();
+    if (this.config.anchorScrolling.enabled) {
+      this.initAnchorScrolling();
+    }
+    if (this.config.appearOnScroll.enabled) {
+      this.initAppearOnScroll();
+    }
+    if (this.config.scrollClasses.enabled) {
+      this.initScrollClassesForBody();
+    }
+    if (this.config.smoothScroll.enabled) {
+      this.initSmoothScroll();
+    }
   }
 
   /**
@@ -317,6 +359,57 @@ class Madj2kScrolling {
     });
 
     window.addEventListener('scroll', updateOnScroll);
+  }
+
+  /**
+   * Initializes wrapper-based smoothScroll scrolling
+   */
+  initSmoothScroll() {
+    const wrapper = document.querySelector(this.config.smoothScroll.wrapperClass);
+    const content = document.querySelector(this.config.smoothScroll.contentClass);
+
+    if (!wrapper || !content) {
+      this._log('Smooth Scroll wrapper or content element missing.');
+      return;
+    }
+
+    const body = document.body;
+    const html = document.documentElement;
+
+    const height = content.offsetHeight;
+    body.style.height = `${height}px`;
+
+    this._smoothScroll = {
+      wrapper,
+      content,
+      current: 0,
+      target: 0,
+      ease: this.config.smoothScroll.easing
+    };
+
+    window.addEventListener('scroll', () => {
+      this._smoothScroll.target = window.scrollY;
+    });
+
+    const animate = () => {
+      this._smoothScroll.current += (this._smoothScroll.target - this._smoothScroll.current) * this._smoothScroll.ease;
+      this._smoothScroll.wrapper.style.transform = `translateY(-${this._smoothScroll.current}px)`;
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+    this._log('Smooth Scroll Scroll activated');
+  }
+
+  /**
+   * Sets the target scroll position for smoothScroll-based scrolling
+   * @param {Number} position - The vertical scroll target in px
+   * @private
+   */
+  _setSmoothScrollTarget(position) {
+    if (this._smoothScroll) {
+      this._smoothScroll.target = position;
+    }
   }
 
   /**

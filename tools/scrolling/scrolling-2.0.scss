@@ -8,3 +8,11 @@
         transform: translateY(0);
     }
 }
+
+.js-smooth-scroll-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    will-change: transform;
+}
