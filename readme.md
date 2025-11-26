@@ -79,7 +79,7 @@ CSS:
     </nav>
 </div>
 ```
-IMPORTANT: If the siteheader is positioned with ```position:fixed```, you have to switch that to ```position:absolute``` when the menu is opened.
+IMPORTANT: If the siteheader is positioned with ```position:fixed``` and you are using full-height-mode (which is the default) you have to switch that to ```position:absolute``` when the menu is opened.
 Otherwise in the opened menu the scrolling won't work.
 ```
 .flyout-open {
@@ -88,6 +88,58 @@ Otherwise in the opened menu the scrolling won't work.
     }
 }
 ```
+
+
+## Options Reference
+
+### State & Animation Classes
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| openStatusClass | string | 'open' | Applied to trigger and menu when open. |
+| animationOpenStatusClass | string | 'opening' | Applied during opening animation. |
+| animationCloseStatusClass | string | 'closing' | Applied during closing animation. |
+| animationBodyClassPrefix | string | 'flyout' | Prefix for body animation classes like `flyout-opening`. |
+| openStatusBodyClass | string | 'flyout-open' | Applied to `body` when the flyout is open. |
+| openStatusBodyClassOverflow | string | 'flyout-open-overflow' | Applied when page height exceeds viewport (used in scroll-locking). |
+
+### CSS Class Selectors
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| contentSectionClass | string | 'js-main-content' | Content wrapper used when creating no-scroll helper. |
+| menuClass | string | 'js-flyout' | Menu root element class. |
+| menuToggleClass | string | 'js-flyout-toggle' | Class for toggle buttons. |
+| menuCloseClass | string | 'js-flyout-close' | Class for close buttons inside the flyout. |
+| menuContainerClass | string | 'js-flyout-container' | Container used for slide animations (`top` transition). |
+| menuInnerClass | string | 'js-flyout-inner' | Inner content wrapper. Observed via ResizeObserver. |
+| heightCalculationClass | string | 'calculate' | Temporary class used during height determination. |
+
+### Height & Size Behavior
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| heightMode | 'full' \| 'maxContent' | 'full' | Determines height behavior of the flyout. |
+| animationDuration | number | 500 | Animation duration in milliseconds. |
+
+### Padding & Layout Behavior
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| paddingBehavior | number | 0 | Controls dynamic horizontal padding. |
+| paddingViewPortMinWidth | number | 0 | Minimum viewport width required before padding applies. |
+| scrollHelper | boolean | true | Creates additional wrapper structure to enable scroll-locking. |
+
+
+### Event Handling
+
+| Option | Type | Default | Description |
+|--------|------|-------------|
+| `eventMode` | `string` | `'click'` | Default event used for toggling the menu. Replaced if `eventModeOpen` or `eventModeClose` are set. |
+| `eventModeOpen` | `string` | `''` | Defines a custom event for opening the menu. |
+| `eventModeClose` | `string` | `''` | Defines a custom event for closing the menu. |
+
+
 ## Special: blur/gray effect for background
 * In order to achieve a blur/gray-effect for the background we add the following DIV to the main-content section:
 ```
@@ -197,6 +249,36 @@ CSS:
     </nav>
 </div>
 ```
+
+
+## Options Reference
+
+### State & Structural Classes
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| **openStatusClass** | `string` | `'open'` | Applied to menu, wrapper, and toggle when the pulldown is open. |
+| **menuClass** | `string` | `'js-pulldown'` | Root class of the pulldown menu. Must match your HTML structure. |
+| **menuToggleClass** | `string` | `'js-pulldown-toggle'` | Toggle buttons that control pulldown menus and also close others. |
+| **menuWrapClass** | `string` | `'js-pulldown-wrap'` | Optional wrapper container that receives open/closed states. |
+
+
+### Animation & Timing
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| **animationDuration** | `number` | `500` | Reserved for future open/close animation timing. Currently no CSS transition is applied by JavaScript. |
+
+
+### Internal Element References
+
+These are automatically detected:
+
+| Property | Description |
+|----------|-------------|
+| **menu** | The menu element referenced via `aria-controls`. |
+| **menuWrap** | Closest parent using `menuWrapClass`. |
+| **toggleElement** | The trigger element passed to the constructor. |
 
 
 # JS: Banner

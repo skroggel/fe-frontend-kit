@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.1
+ * @version 2.0.2
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -51,9 +51,13 @@ class Madj2kFlyoutMenu {
       menuInnerClass: "js-flyout-inner",
       heightCalculationClass: 'calculate',
       heightMode: 'full',
+      eventMode: 'click',
+      eventModeOpen: '',
+      eventModeClose: '',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
-      animationDuration: 500
+      animationDuration: 500,
+      scrollHelper: true,
     };
 
     this.settings = Object.assign({}, defaults, options);
@@ -116,11 +120,26 @@ class Madj2kFlyoutMenu {
    */
   bindEvents() {
     if (this.settings.$closeBtn) {
-      this.settings.$closeBtn.addEventListener('click', e => this.closeEvent(e));
+
+      if (this.settings.eventModeClose) {
+        this.settings.$closeBtn.addEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
+      } else {
+        this.settings.$closeBtn.addEventListener(this.settings.eventMode, e => this.closeEvent(e));
+      }
       this.settings.$closeBtn.addEventListener('keydown', e => this.keyboardEvent(e));
     }
 
-    this.$element.addEventListener('click', e => this.toggleEvent(e));
+    if (this.settings.eventModeOpen || this.settings.eventModeClose) {
+      if (this.settings.eventModeOpen) {
+        this.$element.addEventListener(this.settings.eventModeOpen, e => this.openEvent(e));
+      }
+      if (this.settings.eventModeClose) {
+        this.$element.addEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
+      }
+    } else {
+      this.$element.addEventListener(this.settings.eventMode, e => this.toggleEvent(e));
+    }
+
     this.$element.addEventListener('keydown', e => this.keyboardEvent(e));
 
     this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
@@ -158,11 +177,24 @@ class Madj2kFlyoutMenu {
    */
   destroyEvents() {
     if (this.settings.$closeBtn) {
-      this.settings.$closeBtn.removeEventListener('click', e => this.closeEvent(e));
+      if (this.settings.eventModeClose) {
+        this.settings.$closeBtn.removeEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
+      } else {
+        this.settings.$closeBtn.removeEventListener(this.settings.eventMode, e => this.closeEvent(e));
+      }
       this.settings.$closeBtn.removeEventListener('keydown', e => this.keyboardEvent(e));
     }
 
-    this.$element.removeEventListener('click', e => this.toggleEvent(e));
+    if (this.settings.eventModeOpen || this.settings.eventModeClose) {
+      if (this.settings.eventModeOpen) {
+        this.$element.removeEventListener(this.settings.eventModeOpen, e => this.openEvent(e));
+      }
+      if (this.settings.eventModeClose) {
+        this.$element.removeEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
+      }
+    } else {
+      this.$element.removeEventListener(this.settings.eventMode, e => this.toggleEvent(e));
+    }
     this.$element.removeEventListener('keydown', e => this.keyboardEvent(e));
 
     this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
@@ -224,6 +256,16 @@ class Madj2kFlyoutMenu {
    */
   focusToggle(timeout = 0) {
     setTimeout(() => this.$element.focus(), timeout);
+  }
+
+
+  /**
+   * Handles close event
+   * @param {Event} e - The close event
+   */
+  openEvent(e) {
+    e.preventDefault();
+    this.open();
   }
 
 
@@ -408,15 +450,19 @@ class Madj2kFlyoutMenu {
    * Initializes the no-scroll helper elements
    */
   initNoScrollHelper() {
-    const body = document.body;
-    let helper = body.querySelector('.no-scroll-helper');
-    const content = document.querySelector(`.${this.settings.contentSectionClass}`);
 
-    if (!helper) {
-      if (content) {
-        content.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${content.innerHTML}</div></div>`;
-      } else {
-        body.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${body.innerHTML}</div></div>`;
+    // heightMode "full" with deprecated fullHeight-setting as fallback
+    if (this.settings.scrollHelper) {
+      const body = document.body;
+      let helper = body.querySelector('.no-scroll-helper');
+      const content = document.querySelector(`.${this.settings.contentSectionClass}`);
+
+      if (!helper) {
+        if (content) {
+          content.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${content.innerHTML}</div></div>`;
+        } else {
+          body.innerHTML = `<div class="no-scroll-helper"><div class="no-scroll-helper-inner">${body.innerHTML}</div></div>`;
+        }
       }
     }
   }
@@ -451,7 +497,6 @@ class Madj2kFlyoutMenu {
         body.classList.remove(this.settings.openStatusBodyClassOverflow);
         window.scrollTo({top: scrollTop, behavior: 'instant'});
       }
-
     }
   }
 }
