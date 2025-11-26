@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.2
+ * @version 2.0.3
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -50,10 +50,9 @@ class Madj2kFlyoutMenu {
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
       heightCalculationClass: 'calculate',
+      hoverParentClass: 'nav-main',
       heightMode: 'full',
       eventMode: 'click',
-      eventModeOpen: '',
-      eventModeClose: '',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
       animationDuration: 500,
@@ -76,6 +75,8 @@ class Madj2kFlyoutMenu {
     this.settings.$closeBtn = this.settings.$menu.querySelector(`.${this.settings.menuCloseClass}`);
     this.settings.$menuContainer = this.settings.$menu.querySelector(`.${this.settings.menuContainerClass}`);
     this.settings.$menuInner = this.settings.$menu.querySelector(`.${this.settings.menuInnerClass}`);
+
+    // Bind persistent event handlers
 
     this.initNoScrollHelper();
     this.resizeAndPositionMenu();
@@ -115,39 +116,101 @@ class Madj2kFlyoutMenu {
     }
   }
 
+
+  /**
+   * Handles mouseleave on menu container
+   * @param {MouseEvent} e
+   */
+  containerLeaveEvent(e) {
+    const to = e.relatedTarget;
+    const parentContainer = this.$element.closest(this.settings.hoverParentSelector) || null;
+    if (to && this.$element.contains(to)) return;
+    if (to && parentContainer?.contains(to)) return;
+    if (this.$element.classList.contains(this.settings.openStatusClass)) {
+      document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
+    }
+  }
+
+  /**
+   * Handles mouseleave on trigger element
+   * @param {MouseEvent} e
+   */
+  triggerLeaveEvent(e) {
+    const to = e.relatedTarget;
+    const parentContainer = this.$element.closest('.' + this.settings.hoverParentClass) || null;
+
+    if (to && this.settings.$menu.contains(to)) return;
+    if (to && parentContainer?.contains(to)) return;
+    if (this.$element.classList.contains(this.settings.openStatusClass)) {
+      document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
+    }
+  }
+
+  /**
+   * Handles touchstart outside the flyout menu
+   * @param {TouchEvent} e
+   */
+  touchStartEvent(e) {
+    const target = e.target;
+    if (!target) return;
+    if (this.settings.$menuInner.contains(target)) return;
+    if (this.$element.classList.contains(this.settings.openStatusClass)) {
+      document.dispatchEvent(new CustomEvent('madj2k-flyoutmenu-close'));
+    }
+  }
+
   /**
    * Binds all necessary event listeners
    */
   bindEvents() {
     if (this.settings.$closeBtn) {
-
-      if (this.settings.eventModeClose) {
-        this.settings.$closeBtn.addEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
-      } else {
-        this.settings.$closeBtn.addEventListener(this.settings.eventMode, e => this.closeEvent(e));
-      }
+      const closeEvent = this.settings.eventMode === 'mouseover' ? 'mouseenter' : 'click';
+      this.settings.$closeBtn.addEventListener(closeEvent, e => this.closeEvent(e));
       this.settings.$closeBtn.addEventListener('keydown', e => this.keyboardEvent(e));
     }
 
-    if (this.settings.eventModeOpen || this.settings.eventModeClose) {
-      if (this.settings.eventModeOpen) {
-        this.$element.addEventListener(this.settings.eventModeOpen, e => this.openEvent(e));
-      }
-      if (this.settings.eventModeClose) {
-        this.$element.addEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
-      }
+    if (this.settings.eventMode === 'mouseover') {
+      this.$element.addEventListener('mouseenter', e => this.openEvent(e));
+      this.$element.addEventListener('mouseleave',e =>  this.triggerLeaveEvent(e));
+      this.settings.$menuContainer?.addEventListener('mouseleave', e => this.containerLeaveEvent(e));
+      document.addEventListener('touchstart', e => this.touchStartEvent(e), { passive: true });
     } else {
-      this.$element.addEventListener(this.settings.eventMode, e => this.toggleEvent(e));
+      this.$element.addEventListener('click', e => this.toggleEvent(e));
     }
 
     this.$element.addEventListener('keydown', e => this.keyboardEvent(e));
-
     this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
       .forEach(el => el.addEventListener('keydown', e => this.keyboardEvent(e)));
-
     document.addEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
     document.addEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
   }
+
+
+  /**
+   * Removes all event listeners (including dynamic hover/touch)
+   */
+  destroyEvents() {
+    if (this.settings.$closeBtn) {
+      const closeEvent = this.settings.eventMode === 'mouseover' ? 'mouseenter' : 'click';
+      this.settings.$closeBtn.removeEventListener(closeEvent, e => this.closeEvent(e));
+      this.settings.$closeBtn.removeEventListener('keydown', e => this.keyboardEvent(e));
+    }
+
+    if (this.settings.eventMode === 'mouseover') {
+      this.$element.removeEventListener('mouseenter', e => this.openEvent(e));
+      this.settings.$menuContainer?.removeEventListener('mouseleave', e => this.containerLeaveEvent(e));
+      document.removeEventListener('touchstart', e => this.touchStartEvent(e), { passive: true });
+    } else {
+      this.$element.removeEventListener('click', e => this.toggleEvent(e));
+    }
+
+    this.$element.removeEventListener('keydown', e => this.keyboardEvent(e));
+    this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
+      .forEach(el => el.removeEventListener('keydown', e => this.keyboardEvent(e)));
+    document.removeEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
+    document.removeEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
+  }
+
 
   /**
    * Initializes ResizeObserver to auto-resize menu
@@ -172,37 +235,6 @@ class Madj2kFlyoutMenu {
     }
   }
 
-  /**
-   * Unbinds all event listeners
-   */
-  destroyEvents() {
-    if (this.settings.$closeBtn) {
-      if (this.settings.eventModeClose) {
-        this.settings.$closeBtn.removeEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
-      } else {
-        this.settings.$closeBtn.removeEventListener(this.settings.eventMode, e => this.closeEvent(e));
-      }
-      this.settings.$closeBtn.removeEventListener('keydown', e => this.keyboardEvent(e));
-    }
-
-    if (this.settings.eventModeOpen || this.settings.eventModeClose) {
-      if (this.settings.eventModeOpen) {
-        this.$element.removeEventListener(this.settings.eventModeOpen, e => this.openEvent(e));
-      }
-      if (this.settings.eventModeClose) {
-        this.$element.removeEventListener(this.settings.eventModeClose, e => this.closeEvent(e));
-      }
-    } else {
-      this.$element.removeEventListener(this.settings.eventMode, e => this.toggleEvent(e));
-    }
-    this.$element.removeEventListener('keydown', e => this.keyboardEvent(e));
-
-    this.settings.$menu.querySelectorAll('a,button,input,textarea,select')
-      .forEach(el => el.removeEventListener('keydown', e => this.keyboardEvent(e)));
-
-    document.removeEventListener('madj2k-flyoutmenu-close', e => this.closeEvent(e));
-    document.removeEventListener('madj2k-flyoutmenu-resize', e => this.resizeAndPositionMenuEvent(e));
-  }
 
   /**
    * Destroys ResizeObserver

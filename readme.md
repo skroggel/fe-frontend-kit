@@ -105,15 +105,16 @@ Otherwise in the opened menu the scrolling won't work.
 
 ### CSS Class Selectors
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| contentSectionClass | string | 'js-main-content' | Content wrapper used when creating no-scroll helper. |
-| menuClass | string | 'js-flyout' | Menu root element class. |
-| menuToggleClass | string | 'js-flyout-toggle' | Class for toggle buttons. |
-| menuCloseClass | string | 'js-flyout-close' | Class for close buttons inside the flyout. |
-| menuContainerClass | string | 'js-flyout-container' | Container used for slide animations (`top` transition). |
-| menuInnerClass | string | 'js-flyout-inner' | Inner content wrapper. Observed via ResizeObserver. |
-| heightCalculationClass | string | 'calculate' | Temporary class used during height determination. |
+| Option                 | Type | Default               | Description                                                     |
+|------------------------|------|-----------------------|-----------------------------------------------------------------|
+| contentSectionClass    | string | 'js-main-content'     | Content wrapper used when creating no-scroll helper.            |
+| menuClass              | string | 'js-flyout'           | Menu root element class.                                        |
+| menuToggleClass        | string | 'js-flyout-toggle'    | Class for toggle buttons.                                       |
+| menuCloseClass         | string | 'js-flyout-close'     | Class for close buttons inside the flyout.                      |
+| menuContainerClass     | string | 'js-flyout-container' | Container used for slide animations (`top` transition).         |
+| menuInnerClass         | string | 'js-flyout-inner'     | Inner content wrapper. Observed via ResizeObserver.             |
+| heightCalculationClass | string | 'calculate'           | Temporary class used during height determination.               |
+| hoverParentClass       | string | 'nav-main'            | Class of main container of menu (used in eventMode: 'moueover'. |
 
 ### Height & Size Behavior
 
@@ -135,9 +136,7 @@ Otherwise in the opened menu the scrolling won't work.
 
 | Option | Type | Default | Description |
 |--------|------|-------------|
-| `eventMode` | `string` | `'click'` | Default event used for toggling the menu. Replaced if `eventModeOpen` or `eventModeClose` are set. |
-| `eventModeOpen` | `string` | `''` | Defines a custom event for opening the menu. |
-| `eventModeClose` | `string` | `''` | Defines a custom event for closing the menu. |
+| `eventMode` | `string` | `'click'` | Default event used for toggling the menu. Can be set to `click` or `mouseover`. |
 
 
 ## Special: blur/gray effect for background
