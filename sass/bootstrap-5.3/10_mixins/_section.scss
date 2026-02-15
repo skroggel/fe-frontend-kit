@@ -57,6 +57,33 @@
 ///     @include section-spacing();
 ///   }
 ///
+/// Also generates Bootstrap-style utility classes for vertical spacing
+/// using the `section-spacing()` mixin.
+///
+/// Class naming convention follows:
+/// `.mt-[breakpoint]-[block|section-class]`, `.pt-[breakpoint]-[section-class]`, etc.
+///
+/// Supports both `margin` and `padding` for `top` and `bottom`.
+///
+/// Breakpoint-specific classes are generated using `media-breakpoint-up`
+/// for all breakpoints above `xs`. The `xs` breakpoint outputs base utility classes
+/// without any breakpoint suffix.
+///
+/// Utility classes are generated dynamically from a configurable map:
+///
+/// @example scss
+///   $utility-prefixes: (
+///     'pt': 'padding-top',
+///     'pb': 'padding-bottom',
+///     'mt': 'margin-top',
+///     'mb': 'margin-bottom'
+///   );
+///
+/// @example html
+///   <div class="pt-csp-section mb-lg-csp-block">
+///     [...]
+///   </div>
+///
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
@@ -64,7 +91,7 @@
     $section-class: 'csp-section',
     $block-class: 'csp-block',
     $not-last-class: 'csp-not-last',
-    $utility-append-class: 'sp',
+    $utility-append-class: 'sp', // deprecated
     $padding-append-class: 'padding',
     $csp-blocks: (
         'text',
@@ -73,8 +100,8 @@
     ),
     $content-spacers: (
         'xs': (
-            'section': 48px, // space between different sections
-            'block': 16px    // space between content blocks
+            'section': 48px,
+            'block': 16px
         ),
         'sm': (
             'section': 48px,
@@ -97,14 +124,31 @@
             'block': 16px
         )
     ),
+    $utility-prefixes: (
+        'pt': 'padding-top',
+        'pb': 'padding-bottom',
+        'mt': 'margin-top',
+        'mb': 'margin-bottom'
+    )
 ) {
     @each $breakpoint, $values in $grid-breakpoints {
         $spacer-section: map-get(map-get($content-spacers, $breakpoint), 'section');
         $spacer-block: map-get(map-get($content-spacers, $breakpoint), 'block');
 
-        // section-spacing
         @include with-media($breakpoint) {
+            @each $prefix, $property in $utility-prefixes {
+                // Section Utilities
+                .#{$prefix}#{if($breakpoint != xs, '-#{$breakpoint}', '')}-#{$section-class} {
+                    #{$property}: rem-calc($spacer-section) !important;
+                }
 
+                // Block Utilities
+                .#{$prefix}#{if($breakpoint != xs, '-#{$breakpoint}', '')}-#{$block-class} {
+                    #{$property}: rem-calc($spacer-block) !important;
+                }
+            }
+
+            // Section defaults
             .#{$section-class},
             .#{$section-class}-#{$utility-append-class} {
                 margin-bottom: rem-calc($spacer-section);
@@ -122,18 +166,15 @@
                 padding-top: rem-calc($spacer-section);
                 padding-bottom: rem-calc($spacer-section);
             }
-        }
 
-        // block-spacing
-        @include with-media($breakpoint) {
-
+            // Block defaults
             .#{$block-class}:not(.#{$section-class}),
             .#{$block-class}-#{$utility-append-class} {
                 margin-bottom: rem-calc($spacer-block);
             }
 
             .#{$block-class}.#{$not-last-class}:not(.#{$section-class}):not(:has(+ .#{$block-class})),
-            .#{$block-class}-#{$utility-append-class}.#{$not-last-class}:not(:has(+ .#{$block-class})){
+            .#{$block-class}-#{$utility-append-class}.#{$not-last-class}:not(:has(+ .#{$block-class})) {
                 margin-bottom: 0;
             }
 
@@ -145,6 +186,7 @@
         }
     }
 }
+
 
 // Helper for media-breakpoint-up
 @mixin with-media($breakpoint) {

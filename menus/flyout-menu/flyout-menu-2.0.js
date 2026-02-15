@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.3
+ * @version 2.0.4
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -49,9 +49,12 @@ class Madj2kFlyoutMenu {
       menuCloseClass: "js-flyout-close",
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
-      heightCalculationClass: 'calculate',
       hoverParentClass: 'nav-main',
+      heightCalculationClass: 'calculate',
       heightMode: 'full',
+      heightModeClassPrefix: 'height-mode',
+      scrollMode: 'default',
+      scrollModeClassPrefix: 'scroll-mode',
       eventMode: 'click',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
@@ -76,8 +79,11 @@ class Madj2kFlyoutMenu {
     this.settings.$menuContainer = this.settings.$menu.querySelector(`.${this.settings.menuContainerClass}`);
     this.settings.$menuInner = this.settings.$menu.querySelector(`.${this.settings.menuInnerClass}`);
 
-    // Bind persistent event handlers
+    // add mode classes
+    this.settings.$menu.classList.add(this.settings.heightModeClassPrefix + '-' + this.settings.heightMode);
+    this.settings.$menuInner.classList.add(this.settings.scrollModeClassPrefix + '-' + this.settings.scrollMode);
 
+    // Bind persistent event handlers
     this.initNoScrollHelper();
     this.resizeAndPositionMenu();
     this.paddingMenu();
@@ -444,6 +450,10 @@ class Madj2kFlyoutMenu {
       newHeight = `${innerHeight}px`;
     }
 
+    if (this.settings.scrollMode === 'inner') {
+      this.settings.$menuInner.style.height = newHeight;
+    }
+
     // set max-height again so that longer flyouts do not lead to scrolling on smaller ones
     this.settings.$menu.classList.remove(this.settings.heightCalculationClass);
     this.settings.$menu.style.height = newHeight;
@@ -468,6 +478,7 @@ class Madj2kFlyoutMenu {
 
     if (!this.settings.$paddingReference) return;
     if (this.settings.paddingBehavior === 0) return;
+
     // should be re-evaluated on a resize event after re-opening the menu
     // if (this.settings.paddingBehavior === 1 && this.settings.$menuInner.hasAttribute('data-padding-set')) return;
 
@@ -504,8 +515,7 @@ class Madj2kFlyoutMenu {
    */
   toggleNoScroll() {
 
-    // heightMode "full" with deprecated fullHeight-setting as fallback
-    if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
+    if (this.settings.scrollHelper) {
       const body = document.body;
       const helper = body.querySelector('.no-scroll-helper');
       const inner = body.querySelector('.no-scroll-helper-inner');

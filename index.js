@@ -11,3 +11,4 @@ export { Madj2kElementInViewport } from './tools/element-in-viewport';
 // Menus
 export { Madj2kFlyoutMenu } from './menus/flyout-menu';
 export { Madj2kPulldownMenu } from './menus/pulldown-menu';
+export { Madj2kSlideMenu } from './menus/slide-menu';

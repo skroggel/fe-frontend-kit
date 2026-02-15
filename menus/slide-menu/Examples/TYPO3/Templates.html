@@ -1,0 +1,165 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:siteDefault="http://typo3.org/ns/Madj2k/SiteDefault/ViewHelpers"
+      data-namespace-typo3-fluid="true"
+>
+
+    <f:if condition="{menuItems}">
+        <f:then>
+            <f:comment>
+                <!--
+                    Templates for mobile menu. We don't want this to be loaded on default because
+                     it would duplicate the menu for search engines and would enlarge the body to parse
+                -->
+            </f:comment>
+            <template class="js-slide-nav-tmpl" data-type="menuWrap">
+                <div class="slide-nav-container js-slide-nav-container">
+                    <div class="slide-nav-card js-slide-nav-card %levelClass%" id="slide-card-%uid%">
+                        <div class="slide-nav-inner pd-3">
+                            <ul class="slide-nav-list" role="none">
+                                <li class="slide-nav-headline %levelClass%" role="none">
+                                    <a href="/"
+                                       title="{f:translate(key:'menu.home', extensionName:'siteDefault')}"
+                                       role="menuitem"
+                                       class="slide-nav-headline-link level-1">
+                                        <span>{f:translate(key:'menu.home', extensionName:'siteDefault')}</span>
+                                    </a>
+                                </li>
+
+                                <li class="slide-nav-wrap">
+                                    <ul class="slide-nav-list toggle-list" role="none">
+                                        %menuItems%
+                                    </ul>
+                                </li>
+
+                                <f:if condition="{topMenuItems}">
+                                    <li class="slide-nav-item-footer" role="none">
+                                        <ul class="slide-nav-meta-list" role="none">
+                                            <f:for each="{topMenuItems}" as="menuItem" iteration="iterator">
+                                                <li class="slide-nav-meta-item level1{f:if(condition:'{menuItem.active}', then:' active')}" role="none">
+                                                    <a class="slide-nav-meta-link level1{f:if(condition:'{menuItem.active}', then:' active')}"
+                                                       href="{menuItem.link}"
+                                                       target="{menuItem.target}"
+                                                       title="{menuItem.data.title}"
+                                                       role="menuitem"
+                                                    >
+                                                        <span><f:format.html parseFuncTSPath="lib.parseFunc_Inline">{menuItem.title}</f:format.html></span>
+                                                    </a>
+                                                </li>
+                                            </f:for>
+                                        </ul>
+                                    </li>
+                                </f:if>
+
+                                <f:if condition="{footerMenuItems}">
+                                    <li class="slide-nav-item-footer" role="none">
+                                        <ul class="slide-nav-meta-list" role="none">
+                                            <f:for each="{footerMenuItems}" as="menuItem" iteration="iterator">
+                                                <li class="slide-nav-meta-item level1{f:if(condition:'{menuItem.active}', then:' active')}" role="none">
+                                                    <a class="slide-nav-meta-link level1{f:if(condition:'{menuItem.active}', then:' active')}"
+                                                       href="{menuItem.link}"
+                                                       target="{menuItem.target}"
+                                                       title="{menuItem.data.title}"
+                                                       role="menuitem"
+                                                    >
+                                                        <span><f:format.html parseFuncTSPath="lib.parseFunc_Inline">{menuItem.title}</f:format.html></span>
+                                                    </a>
+                                                </li>
+                                            </f:for>
+                                        </ul>
+                                    </li>
+                                </f:if>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template class="js-slide-nav-tmpl" data-type="menuItem">
+                <li class="slide-nav-item toggle-list-item js-slide-nav-item %activeClass% %hasChildrenClass%" role="none">
+                    <f:comment><!-- normal link that opens the menu-item --></f:comment>
+
+                    %ifHasNoChildrenStart%
+                    <a href="%link%"
+                       title="%titleRaw%"
+                       role="menuitem"
+                       class="slide-nav-link toggle-list-link %activeClass% %hasChildrenClass%"
+                       target="%target%"
+                       aria-current="%ariaCurrent%">
+                        <span class="toggle-list-text">%title%</span>
+                    </a>
+                    %ifHasNoChildrenEnd%
+
+                    <f:comment><!-- link that opens next card --></f:comment>
+                    %ifHasChildrenStart%
+                    <a class="slide-nav-link slide-nav-next toggle-list-link js-slide-nav-next %activeClass% %hasChildrenClass%"
+                       href="#"
+                       role="button"
+                       title="{f:translate(key:'menu.openSubmenu', extensionName:'siteDefault')}"
+                       aria-label="{f:translate(key:'menu.openSubmenu', extensionName:'siteDefault')}"
+                       aria-haspopup="true"
+                       aria-expanded="%ariaExpanded%"
+                       aria-controls="slide-card-%uid%">
+                        <span class="toggle-list-text">%title%</span><span class="icon-arrow-right icon"></span>
+                    </a>
+                    %ifHasChildrenEnd%
+
+                    %submenu%
+                </li>
+            </template>
+
+            <template class="js-slide-nav-tmpl" data-type="subMenuWrap">
+                <div class="slide-nav-card js-slide-nav-card %activeClass% %levelClass%" id="slide-card-%uid%">
+                    <div class="slide-nav-inner pd-3">
+                        <ul class="slide-nav-list">
+                            <li class="slide-nav-item-back" role="none">
+                                <button class="slide-nav-back js-slide-nav-back"
+                                        title="{f:translate(key:'menu.levelUp', extensionName:'siteDefault')}"
+                                        aria-haspopup="true"
+                                        aria-label="{f:translate(key:'menu.levelUp', extensionName:'siteDefault')}"
+                                        aria-controls="slide-card-%uid%"
+                                        data-parent-card="slide-card-%parentUid%"><span class="icon-arrow-left icon"></span><span
+                                    class="slide-nav-back-label">{f:translate(key:'menu.back', extensionName:'siteDefault')}</span>
+                                </button>
+                            </li>
+                            <li class="slide-nav-headline %levelClass%" role="none">
+
+                                <f:comment><!-- normal parent --></f:comment>
+                                %ifIsNotLinkedStart%
+                                <span class="slide-nav-headline-text %currentClass% %isLinkedClass%">%title%</span>
+                                %ifIsNotLinkedEnd%
+
+                                <f:comment><!-- linked parent --></f:comment>
+                                %ifIsLinkedStart%
+                                <a href="%link%"
+                                   title="%titleRaw%"
+                                   role="menuitem"
+                                   class="slide-nav-headline-link %currentClass% %hasChildrenClass% %isLinkedClass%"
+                                   target="%target%"
+                                   aria-current="%ariaCurrent%">
+                                    <span>%title%</span>
+                                </a>
+                                %ifIsLinkedEnd%
+                            </li>
+
+                            <li class="slide-nav-wrap">
+                                <ul class="slide-nav-list toggle-list" role="none">
+                                    %menuItems%
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </template>
+
+            <script>
+                let slideNavItems = <f:format.raw><siteDefault:jsonMenu items="{menuItems}" parseFuncTSPath="lib.parseFunc_Inline" /></f:format.raw>;
+            </script>
+        </f:then>
+        <f:else>
+            <script>
+                let slideNavItems = {};
+            </script>
+        </f:else>
+    </f:if>
+</html>

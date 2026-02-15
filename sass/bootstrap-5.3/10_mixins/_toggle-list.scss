@@ -20,6 +20,8 @@
 /// @param {Color} $font-color-active - Font color for active items. Defaults to `$color-primary`.
 /// @param {Length} $icon-size - Size of the icon element or pseudo-element. Defaults to `30px`.
 /// @param {String} $icon-style - Icon identifier or class (e.g., arrow icon). Defaults to `$icon-arrow-right`.
+/// @param {Color} $icon-color - Color of the icon in default state. Defaults to `$font-color`.
+/// @param {Color} $icon-color-active - Color of the icon in active state. Defaults to `$font-color-active`.
 ///
 /// @example html
 ///   <!-- With icon span -->
@@ -27,7 +29,7 @@
 ///     <div class="toggle-list-item">
 ///       <div class="toggle-list-link">
 ///         <span>Toggle Item</span>
-///         <span class="icon"></span>
+///         <span class="toggle-icon"></span>
 ///       </div>
 ///     </div>
 ///   </div>
@@ -61,8 +63,13 @@
     $border-size: 1px,
     $font-color: var(--bs-secondary),
     $font-color-active: var(--bs-primary),
+    $font-color-hover: $font-color-active,
     $icon-size: 30px,
-    $icon-style: ''
+    $icon-style: '',
+    $icon-color: $font-color,
+    $icon-color-active: $font-color-active,
+    $icon-color-hover: $icon-color-active,
+
 ) {
     @include list-reset();
     display: flex;
@@ -90,25 +97,30 @@
             text-decoration: none !important;
         }
 
+        &::after,
         .icon {
             font-size: rem-calc($icon-size);
-            color: $font-color;
+            color: $icon-color;
         }
 
-        &:hover,
         &.active,
         &[aria-expanded="true"] {
             color: $font-color-active;
 
-            &::after {
-                color: $font-color-active;
-            }
-
+            &::after,
             .icon {
-                color: $font-color-active;
+                color: $icon-color-active;
             }
         }
 
+        &:hover{
+            color: $font-color-hover;
+
+            &::after,
+            .icon {
+                color: $icon-color-hover;
+            }
+        }
     }
 
     & > li {
@@ -121,10 +133,12 @@
         & > .link {
             @extend .toggle-list-link;
 
-            &::after {
-                @extend .icomoon;
-                font-size: rem-calc($icon-size);
-                content: $icon-style;
+            @if $icon-style != '' {
+                &::after {
+                    @extend .icomoon;
+                    font-size: rem-calc($icon-size);
+                    content: $icon-style;
+                }
             }
         }
     }

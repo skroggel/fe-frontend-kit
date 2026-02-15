@@ -1,7 +1,7 @@
 #  @madj2k/fe-frontend-kit
 Reusable frontend toolkit including SCSS mixins and menu components (JS/SCSS).
 
-# #  Installation
+##  Installation
 ```
 npm install @madj2k/fe-frontend-kit
 ```
@@ -71,7 +71,7 @@ CSS:
              id="nav-mobile"
              data-position-ref="siteheader">
             <div class="flyout-container js-flyout-container">
-                <div class="nav-mobile-inner js-flyout-inner">
+                <div class="flyout-inner js-flyout-inner">
                     CONTENT HERE
                 </div>
             </div>
@@ -118,25 +118,27 @@ Otherwise in the opened menu the scrolling won't work.
 
 ### Height & Size Behavior
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| heightMode | 'full' \| 'maxContent' | 'full' | Determines height behavior of the flyout. |
-| animationDuration | number | 500 | Animation duration in milliseconds. |
+| Option | Type | Default | Description                                                               |
+|--------|------|---------|---------------------------------------------------------------------------|
+| animationDuration | number | 500 | Animation duration in milliseconds.                                       |
+| heightMode | 'full' \| 'maxContent' | 'full' | Determines height behavior of the flyout.                                 |
+| heightModeClassPrefix  | string | 'height-mode' | Prefix of class that is added to the DOM to indicate the used heightMode. |
 
 ### Padding & Layout Behavior
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| paddingBehavior | number | 0 | Controls dynamic horizontal padding. |
-| paddingViewPortMinWidth | number | 0 | Minimum viewport width required before padding applies. |
-| scrollHelper | boolean | true | Creates additional wrapper structure to enable scroll-locking. |
-
+| Option                  | Type                 | Default       | Description                                                               |
+|-------------------------|----------------------|---------------|---------------------------------------------------------------------------|
+| paddingBehavior         | number               | 0             | Controls dynamic horizontal padding.                                      |
+| paddingViewPortMinWidth | number               | 0             | Minimum viewport width required before padding applies.                   |
+| scrollHelper            | boolean              | true          | Creates additional wrapper structure to enable scroll-locking.            |
+| scrollMode              | 'default' \| 'inner' | 'default'      | If set to 'inner' the inner-DIV of the flyout is scrollable.              |
+| scrollModeClassPrefix  | string               | 'scroll-mode' | Prefix of class that is added to the DOM to indicate the used ccrollMode. |
 
 ### Event Handling
 
-| Option | Type | Default | Description |
-|--------|------|-------------|
-| `eventMode` | `string` | `'click'` | Default event used for toggling the menu. Can be set to `click` or `mouseover`. |
+| Option                | Type | Default | Description |
+|-----------------------|------|---------|-------------|
+| eventMode             | string | 'click'`| Default event used for toggling the menu. Can be set to `click` or `mouseover`. |
 
 
 ## Special: blur/gray effect for background
@@ -278,6 +280,301 @@ These are automatically detected:
 | **menu** | The menu element referenced via `aria-controls`. |
 | **menuWrap** | Closest parent using `menuWrapClass`. |
 | **toggleElement** | The trigger element passed to the constructor. |
+
+
+# Slide-Navigation
+
+A card-based, multi-level slide menu for mobile and off-canvas navigation.
+The menu is generated dynamically from a JSON structure and HTML templates.
+
+Features:
+- Unlimited menu depth
+- Card-based sliding navigation
+- Keyboard navigation & full accessibility (WAI-ARIA)
+- Focus trapping and scroll locking
+- No jQuery required (Vanilla JS)
+- CMS-friendly (TYPO3 / dynamic content)
+
+## Usage
+Integrate the CSS- and JS-file into your project.
+Then initialize the menu on a toggle element:
+
+```js
+import { Madj2kSlideMenu } from '@madj2k/fe-frontend-kit/menus/slide-menu';
+
+document.querySelectorAll('.js-slide-nav-toggle').forEach((el) => {
+    new Madj2kSlideMenu(el, {
+        menuItemsJson: slideNavItems
+    });
+});
+```
+
+Optional: automatically close the slide menu on resize:
+
+```js
+import { Madj2kBetterResizeEvent } from '@madj2k/fe-frontend-kit/tools/better-resize-event';
+
+document.addEventListener('madj2k-better-resize-event', () => {
+    document.dispatchEvent(new CustomEvent('madj2k-slidemenu-close'));
+});
+```
+
+CSS:
+```scss
+@use '@madj2k/fe-frontend-kit/menus/slide-menu' as *;
+```
+
+## Basic HTML
+
+### Toggle element
+The toggle element opens and closes the slide menu.
+It MUST define an aria-controls attribute pointing to the menu container.
+
+```html
+<button class="nav-iconlink js-slide-nav-toggle"
+        aria-label="Open Menu"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-controls="slide-nav">
+    <span>Open Menu</span>
+</button>
+```
+
+### Menu container
+The menu container is initially empty and will be filled dynamically.
+
+```html
+<nav class="slide-nav"
+     id="slide-nav"
+     data-position-ref="navbar-wrap"></nav>
+```
+**Note:**
+If data-position-ref is set, the menu will be positioned below that element (referenced by id).
+Otherwise, it is positioned relative to the toggle.
+
+### Content wrapper
+To prevent background scrolling while the menu is open, the main content
+should be wrapped in an element with the configured contentSectionClass
+(default: js-main-content).
+
+```html
+<div class="page-main js-main-content">
+    ...
+</div>
+```
+
+
+## HTML Templates
+The slide menu is rendered from <template> elements that must exist in the DOM.
+These templates are not rendered by default and therefore do not duplicate
+navigation markup for search engines.
+
+**Note: There are example files for a TYPO3 CMS extension available.**
+
+### menuWrap
+```html
+<template class="js-slide-nav-tmpl" data-type="menuWrap">
+    <div class="slide-nav-container js-slide-nav-container">
+        <div class="slide-nav-card js-slide-nav-card %levelClass%" id="slide-card-%uid%">
+            <div class="slide-nav-inner">
+                <ul class="slide-nav-list">
+                    %menuItems%
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+```
+
+### menuItem
+```html
+<template class="js-slide-nav-tmpl" data-type="menuItem">
+    <li class="slide-nav-item %activeClass% %hasChildrenClass%">
+
+        <!-- normal link that opens the menu-item -->
+        %ifHasNoChildrenStart%
+        <a href="%link%"
+           title="%titleRaw%"
+           role="menuitem"
+           class="slide-nav-link arrow-listing-link %activeClass% %hasChildrenClass%"
+           target="%target%"
+           aria-current="%ariaCurrent%">
+            <span>%title%</span>
+        </a>
+        %ifHasNoChildrenEnd%
+
+        <!-- link that opens next card -->
+        %ifHasChildrenStart%
+        <a class="slide-nav-link slide-nav-next arrow-listing-link js-slide-nav-next animation-hover %activeClass% %hasChildrenClass%"
+           href="#"
+           role="button"
+           title="Open Submenu"
+           aria-label="Open Submenu"
+           aria-haspopup="true"
+           aria-expanded="%ariaExpanded%"
+           aria-controls="slide-card-%uid%">
+            <span>%title%</span><span class="icon-arrow-right icon"></span>
+        </a>
+        %ifHasChildrenEnd%
+        %submenu%
+    </li>
+</template>
+```
+
+### subMenuWrap
+
+```html
+<template class="js-slide-nav-tmpl" data-type="subMenuWrap">
+    <a class="slide-nav-next js-slide-nav-next"
+       href="#"
+       role="button"
+       title="Open Submenu"
+       aria-label="Open Submenu"
+       aria-haspopup="true"
+       aria-expanded="%ariaExpanded%"
+       aria-controls="slide-card-%uid%">&gt;</a>
+
+    <div class="slide-nav-card js-slide-nav-card %activeClass% %levelClass%"
+         id="slide-card-%uid%">
+        <div class="slide-nav-inner">
+            <ul class="slide-nav-list">
+                <li class="slide-nav-item-back" role="none">>
+                    <button class="slide-nav-back js-slide-nav-back"
+                            aria-label="One Level Up"
+                            aria-controls="slide-card-%uid%"
+                            data-parent-card="slide-card-%parentUid%">
+                        &lt;<span class="slide-nav-back-label">Back</span>
+                    </button>
+                </li>
+
+                <li class="slide-nav-headline %levelClass%" role="none">
+
+                    <!-- normal parent -->
+                    %ifIsNotLinkedStart%
+                    <span class="slide-nav-headline-text %currentClass% %isLinkedClass%">%title%</span>
+                    %ifIsNotLinkedEnd%
+
+                    <!-- linked parent -->
+                    %ifIsLinkedStart%
+                    <a href="%link%"
+                       title="%titleRaw%"
+                       role="menuitem"
+                       class="slide-nav-headline-link %currentClass% %hasChildrenClass% %isLinkedClass%"
+                       target="%target%"
+                       aria-current="%ariaCurrent%">
+                        <span>%title%</span>
+                    </a>
+                    %ifIsLinkedEnd%
+                </li>
+
+                %menuItems%
+            </ul>
+        </div>
+    </div>
+</template>
+```
+## Menu Data (menuItemsJson)
+
+The menu structure is defined as a hierarchical JSON array.
+
+### Example
+```js
+const slideNavItems = [
+    {
+        data: { uid: 2, pid: 1 },
+        title: 'Main Item',
+        link: '/main',
+        target: '_self',
+        active: 1,
+        current: 0,
+        hasSubpages: 1,
+        children: [
+            {
+                data: { uid: 3, pid: 2 },
+                title: 'Sub Item',
+                link: '/main/sub',
+                target: '_self',
+                active: 0,
+                current: 0,
+                hasSubpages: 0,
+                children: []
+            }
+        ]
+    },
+    {
+        data: { uid: 4, pid: 1 },
+        title: 'Second Item',
+        link: '/second',
+        target: '_self',
+        active: 0,
+        current: 0,
+        hasSubpages: 0,
+        children: []
+    }
+];
+```
+
+### Important fields
+
+| Property | Description |
+|--------|-------------|
+| data.uid | Unique identifier of the menu item |
+| data.pid | Parent identifier |
+| title | Display title |
+| link | URL |
+| target | Link target |
+| active | Marks active navigation path |
+| current | Marks current page |
+| hasSubpages | Indicates submenu existence |
+| children | Array of child items |
+
+---
+
+## Options Reference
+
+### State & Animation Classes
+
+| Option | Type | Default | Description |
+|------|------|---------|-------------|
+| openStatusClass | string | 'open' | Applied to toggle and menu when open |
+| openCardStatusClass | string | 'show' | Marks the visible card |
+| activeStatusClass | string | 'active' | Marks active navigation path |
+| currentStatusClass | string | 'current' | Marks current page |
+| animationOpenStatusClass | string | 'opening' | Applied during opening animation |
+| animationCloseStatusClass | string | 'closing' | Applied during closing animation |
+
+### Structural Classes
+
+| Option | Type | Default | Description |
+|------|------|---------|-------------|
+| menuToggleClass | string | 'js-slide-nav-toggle' | Toggle element |
+| menuWrapClass | string | 'js-slide-nav-container' | Menu container |
+| menuCardClass | string | 'js-slide-nav-card' | Card element |
+| nextCardToggleClass | string | 'js-slide-nav-next' | Submenu toggle |
+| lastCardToggleClass | string | 'js-slide-nav-back' | Back button |
+| contentSectionClass | string | 'js-main-content' | Scroll-lock wrapper |
+
+### Behavior
+
+| Option | Type | Default | Description |
+|------|------|---------|-------------|
+| animationDuration | number | 500 | Animation duration in ms |
+| loadOnOpen | boolean | true | Build menu on first open |
+| startOnHome | boolean | false | Always start on first level |
+| scrollHelper            | boolean              | true          | Creates additional wrapper structure to enable scroll-locking.            |
+
+---
+
+## Events
+
+The component dispatches the following custom events on `document`:
+
+- madj2k-slidemenu-opening
+- madj2k-slidemenu-opened
+- madj2k-slidemenu-closing
+- madj2k-slidemenu-closed
+- madj2k-slidemenu-next-opened
+- madj2k-slidemenu-previous-opened
 
 
 # JS: Banner

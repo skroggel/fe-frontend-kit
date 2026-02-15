@@ -135,6 +135,14 @@
         color: $icon-color;
     }
 
+    #{$icon-selector}:not(:has(svg)) {
+        width: max-content;
+    }
+
+    #{$icon-selector}:before {
+        width: max-content;
+    }
+
     #{$icon-selector} svg {
         height: 100%;
     }

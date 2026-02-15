@@ -1,0 +1,129 @@
+/* ==================================================
+ * Slide Navigation
+ * ================================================== */
+
+$slide-nav-zindex: 890;
+$slide-nav-card-zindex: 666;
+$slide-nav-card-zindex-active: 9999;
+
+.slide-nav {
+    position: absolute;
+    left: 0;
+    top: -100vh;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+    z-index: $slide-nav-zindex;
+    display: none;
+
+    /* prevent pointer events on inner spans */
+    a span,
+    button span {
+        pointer-events: none;
+    }
+
+    /* --------------------------------------------------
+     * Open state
+     * -------------------------------------------------- */
+    &.open {
+        display: block;
+    }
+
+    /* ==================================================
+     * Menu container
+     * (position animated via JS: top)
+     * ================================================== */
+    .slide-nav-container {
+        position: absolute;
+        top: -100%;
+        left: 0;
+
+        width: 100%;
+        height: 100vh;
+    }
+
+    /* ==================================================
+     * Cards
+     * (position animated via JS: left)
+     * ================================================== */
+    .slide-nav-card {
+        position: absolute;
+        top: 0;
+        left: 100%;
+
+        width: 100%;
+        height: 100%;
+
+        background-color: #fff;
+        z-index: $slide-nav-card-zindex;
+        transition: none;
+
+        /* active / visible card */
+        &.show {
+            left: 0;
+            z-index: $slide-nav-card-zindex-active;
+        }
+
+        /* animation lifecycle hooks */
+        &.opening,
+        &.closing {
+            box-shadow:
+                rgba(0, 0, 0, 0.25) 0px 14px 28px,
+                rgba(0, 0, 0, 0.22) 0px 20px 20px;
+        }
+    }
+
+    /* ==================================================
+     * Card inner layout
+     * ================================================== */
+
+    .slide-nav-inner {
+        display: flex;
+        flex-direction: column;
+
+        width: 100%;
+        height: 100%;
+
+        overflow-y: auto;
+        margin: 0;
+    }
+
+    /* ==================================================
+     * Lists & items
+     * ================================================== */
+    .slide-nav-list {
+        display: flex;
+        flex-direction: column;
+
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        height: 100%;
+    }
+
+    .slide-nav-item {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .slide-nav-item-back {
+        margin-bottom: 1rem;
+    }
+
+    /* ==================================================
+     * Links & buttons
+     * ================================================== */
+    .slide-nav-link,
+    .slide-nav-back,
+    .slide-nav-next {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+}
