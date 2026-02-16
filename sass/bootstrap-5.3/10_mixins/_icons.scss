@@ -45,10 +45,6 @@
             align-items: center;
             text-decoration: none;
 
-            &:hover {
-                text-decoration: none;
-            }
-
             span.icon:first-child:not(span.icon:last-child) {
                 margin-right: rem-calc($margin);
             }
