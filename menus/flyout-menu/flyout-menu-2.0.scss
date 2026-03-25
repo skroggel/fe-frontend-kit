@@ -56,9 +56,10 @@ html, body {
         overflow: hidden;
     }
 
-    &-inner.scroll-mode-inner {
-        overflow-y: auto;
-        overflow-x: hidden;
+    &.animation-direction-left {
+        .flyout-container {
+            top: 0;
+            left: -100%;
+        }
     }
 }
-

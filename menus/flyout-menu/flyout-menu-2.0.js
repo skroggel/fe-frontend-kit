@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.4
+ * @version 2.0.5
  * @license GNU General Public License v3.0
  * @see https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -38,6 +38,8 @@ class Madj2kFlyoutMenu {
   constructor(element, options = {}) {
     const defaults = {
       openStatusClass: 'open',
+      animationDirection: 'top',
+      animationUnit: '%',
       animationOpenStatusClass: 'opening',
       animationCloseStatusClass: 'closing',
       animationBodyClassPrefix: 'flyout',
@@ -49,12 +51,9 @@ class Madj2kFlyoutMenu {
       menuCloseClass: "js-flyout-close",
       menuContainerClass: "js-flyout-container",
       menuInnerClass: "js-flyout-inner",
-      hoverParentClass: 'nav-main',
       heightCalculationClass: 'calculate',
+      hoverParentClass: 'nav-main',
       heightMode: 'full',
-      heightModeClassPrefix: 'height-mode',
-      scrollMode: 'default',
-      scrollModeClassPrefix: 'scroll-mode',
       eventMode: 'click',
       paddingBehavior: 0,
       paddingViewPortMinWidth: 0,
@@ -79,11 +78,25 @@ class Madj2kFlyoutMenu {
     this.settings.$menuContainer = this.settings.$menu.querySelector(`.${this.settings.menuContainerClass}`);
     this.settings.$menuInner = this.settings.$menu.querySelector(`.${this.settings.menuInnerClass}`);
 
-    // add mode classes
-    this.settings.$menu.classList.add(this.settings.heightModeClassPrefix + '-' + this.settings.heightMode);
-    this.settings.$menuInner.classList.add(this.settings.scrollModeClassPrefix + '-' + this.settings.scrollMode);
+    const allowedAnimationUnits = new Set([
+      '%',
+      'vw',
+      'vh',
+      'vmin',
+      'vmax'
+    ]);
 
-    // Bind persistent event handlers
+    this.settings.animationUnit = allowedAnimationUnits.has(this.settings.animationUnit?.trim())
+      ? this.settings.animationUnit.trim()
+      : '%';
+
+    this.settings.$menu.classList.add(
+      'animation-direction-' + this.settings.animationDirection,
+      'animation-unit-' + (this.settings.animationUnit == '%' ? 'percentage' : this.settings.animationUnit),
+      'height-mode-' + this.settings.heightMode,
+      'event-mode-' + this.settings.eventMode,
+    );
+
     this.initNoScrollHelper();
     this.resizeAndPositionMenu();
     this.paddingMenu();
@@ -99,6 +112,7 @@ class Madj2kFlyoutMenu {
     const element = e.target;
 
     switch (e.key) {
+      case 'ArrowLeft':
       case 'ArrowUp':
         if (element === this.$element) this.close();
         break;
@@ -108,6 +122,7 @@ class Madj2kFlyoutMenu {
           this.toggle();
         }
         break;
+      case 'ArrowRight':
       case 'ArrowDown':
         if (element === this.$element) {
           e.preventDefault();
@@ -311,7 +326,7 @@ class Madj2kFlyoutMenu {
    * Opens the flyout menu
    */
   open() {
-    const {$menu, $element, animationOpenStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix} = this.settings;
+    const {$menu, $element, animationOpenStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix, animationDirection} = this.settings;
     const $body = document.body;
 
     if (!$menu.classList.contains(openStatusClass) && !$menu.classList.contains(animationOpenStatusClass)) {
@@ -330,8 +345,13 @@ class Madj2kFlyoutMenu {
       $body.classList.add(openStatusBodyClass);
       $body.classList.add(`${animationBodyClassPrefix}-${animationOpenStatusClass}`);
 
-      this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
-      this.settings.$menuContainer.style.top = '0';
+      if (animationDirection === 'left') {
+        this.settings.$menuContainer.style.transition = `left ${this.settings.animationDuration}ms`;
+        this.settings.$menuContainer.style.left = `0${this.settings.animationUnit}`;
+      } else {
+        this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
+        this.settings.$menuContainer.style.top = `0${this.settings.animationUnit}`;
+      }
 
       setTimeout(() => {
         $menu.classList.remove(animationOpenStatusClass);
@@ -368,7 +388,7 @@ class Madj2kFlyoutMenu {
    * Closes the flyout menu
    */
   close() {
-    const {$menu, $element, animationCloseStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix} = this.settings;
+    const {$menu, $element, animationCloseStatusClass, openStatusClass, openStatusBodyClass, animationBodyClassPrefix, animationDirection} = this.settings;
     const $body = document.body;
 
     if ($menu.classList.contains(openStatusClass) && !$menu.classList.contains(animationCloseStatusClass)) {
@@ -383,8 +403,13 @@ class Madj2kFlyoutMenu {
       $body.classList.add(`${animationBodyClassPrefix}-${animationCloseStatusClass}`);
       $body.classList.remove(openStatusBodyClass);
 
-      this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
-      this.settings.$menuContainer.style.top = '-100%';
+      if (animationDirection === 'left') {
+        this.settings.$menuContainer.style.transition = `left ${this.settings.animationDuration}ms`;
+        this.settings.$menuContainer.style.left = `-100${this.settings.animationUnit}`;
+      } else {
+        this.settings.$menuContainer.style.transition = `top ${this.settings.animationDuration}ms`;
+        this.settings.$menuContainer.style.top = `-100${this.settings.animationUnit}`;
+      }
 
       setTimeout(() => {
         $menu.classList.remove(openStatusClass, animationCloseStatusClass);
@@ -450,10 +475,6 @@ class Madj2kFlyoutMenu {
       newHeight = `${innerHeight}px`;
     }
 
-    if (this.settings.scrollMode === 'inner') {
-      this.settings.$menuInner.style.height = newHeight;
-    }
-
     // set max-height again so that longer flyouts do not lead to scrolling on smaller ones
     this.settings.$menu.classList.remove(this.settings.heightCalculationClass);
     this.settings.$menu.style.height = newHeight;
@@ -478,7 +499,6 @@ class Madj2kFlyoutMenu {
 
     if (!this.settings.$paddingReference) return;
     if (this.settings.paddingBehavior === 0) return;
-
     // should be re-evaluated on a resize event after re-opening the menu
     // if (this.settings.paddingBehavior === 1 && this.settings.$menuInner.hasAttribute('data-padding-set')) return;
 
@@ -515,7 +535,8 @@ class Madj2kFlyoutMenu {
    */
   toggleNoScroll() {
 
-    if (this.settings.scrollHelper) {
+    // heightMode "full" with deprecated fullHeight-setting as fallback
+    if (this.settings.heightMode === 'full' || this.settings.fullHeight === true) {
       const body = document.body;
       const helper = body.querySelector('.no-scroll-helper');
       const inner = body.querySelector('.no-scroll-helper-inner');

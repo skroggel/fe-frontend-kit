@@ -21,11 +21,28 @@
 /// @param {String} $font-format - The key name of the format to apply (e.g., 'h1', 'copy-small').
 /// @param {String} $tablet-breakpoint - The breakpoint name for tablet styles (default: lg).
 /// @param {String} $desktop-breakpoint - The breakpoint name for desktop styles (default: xl).
+/// @param {String} $breakpoint-type - Which type of breakpoint to use (1: later breakpoint, 2: earlier breakpoint).
 ///
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin font-format($font-formats, $font-format: 'h1', $tablet-breakpoint: lg, $desktop-breakpoint: xl) {
+@mixin font-format($font-formats, $font-format: 'h1', $tablet-breakpoint: '', $desktop-breakpoint: '', $breakpoint-type: 1) {
+
+    @if ($tablet-breakpoint == '') {
+        @if $breakpoint-type == 2 {
+            $tablet-breakpoint: md;
+        } @else {
+            $tablet-breakpoint: lg;
+        }
+    }
+    @if ($desktop-breakpoint == '') {
+        @if $breakpoint-type == 2 {
+            $desktop-breakpoint: lg;
+        } @else {
+            $desktop-breakpoint: xl;
+        }
+    }
+
     $format-data: map-get($font-formats, $font-format);
     $mobile-data: map-get($format-data, 'mobile');
     $default-data: map-get($format-data, 'default');

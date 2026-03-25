@@ -128,22 +128,19 @@
         }
     }
 
-    #{$icon-selector}:not(:has(svg)),
-    #{$icon-selector} svg {
+    #{$icon-selector} {
         font-size: rem-calc($icon-size);
-        width: rem-calc($icon-size);
+        width: 100%;
         color: $icon-color;
     }
 
-    #{$icon-selector}:not(:has(svg)) {
-        width: max-content;
+    // adapt svg size to font size
+    #{$icon-selector} svg {
+        width: 1em;
+        height: 1em;
     }
 
     #{$icon-selector}:before {
         width: max-content;
-    }
-
-    #{$icon-selector} svg {
-        height: 100%;
     }
 }

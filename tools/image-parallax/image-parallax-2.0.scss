@@ -1,0 +1,16 @@
+.parallax-img {
+    picture {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+    }
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: 120%;
+        object-fit: cover;
+        will-change: transform;
+    }
+}

@@ -71,7 +71,7 @@ CSS:
              id="nav-mobile"
              data-position-ref="siteheader">
             <div class="flyout-container js-flyout-container">
-                <div class="flyout-inner js-flyout-inner">
+                <div class="nav-mobile-inner js-flyout-inner">
                     CONTENT HERE
                 </div>
             </div>
@@ -116,29 +116,29 @@ Otherwise in the opened menu the scrolling won't work.
 | heightCalculationClass | string | 'calculate'           | Temporary class used during height determination.               |
 | hoverParentClass       | string | 'nav-main'            | Class of main container of menu (used in eventMode: 'moueover'. |
 
-### Height & Size Behavior
+### Height & Animation Behavior
 
-| Option | Type | Default | Description                                                               |
-|--------|------|---------|---------------------------------------------------------------------------|
-| animationDuration | number | 500 | Animation duration in milliseconds.                                       |
-| heightMode | 'full' \| 'maxContent' | 'full' | Determines height behavior of the flyout.                                 |
-| heightModeClassPrefix  | string | 'height-mode' | Prefix of class that is added to the DOM to indicate the used heightMode. |
+| Option             | Type                                   | Default | Description                               |
+|--------------------|----------------------------------------|---------|-------------------------------------------|
+| heightMode         | 'full' \| 'maxContent'                 | 'full'  | Determines height behavior of the flyout. |
+| animationDirection | 'top' \| 'left'                        | 'top'   | Determines the direction of the flyout.   |
+| animationDuration  | number                                 | 500     | Animation duration in milliseconds.       |
+| animationUnit      | '%' \| 'vw' \| 'vh' \| 'vmin' \| 'vmax' | '%'     | Determines the unit for the animation.    |
 
 ### Padding & Layout Behavior
 
-| Option                  | Type                 | Default       | Description                                                               |
-|-------------------------|----------------------|---------------|---------------------------------------------------------------------------|
-| paddingBehavior         | number               | 0             | Controls dynamic horizontal padding.                                      |
-| paddingViewPortMinWidth | number               | 0             | Minimum viewport width required before padding applies.                   |
-| scrollHelper            | boolean              | true          | Creates additional wrapper structure to enable scroll-locking.            |
-| scrollMode              | 'default' \| 'inner' | 'default'      | If set to 'inner' the inner-DIV of the flyout is scrollable.              |
-| scrollModeClassPrefix  | string               | 'scroll-mode' | Prefix of class that is added to the DOM to indicate the used ccrollMode. |
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| paddingBehavior | number | 0 | Controls dynamic horizontal padding. |
+| paddingViewPortMinWidth | number | 0 | Minimum viewport width required before padding applies. |
+| scrollHelper | boolean | true | Creates additional wrapper structure to enable scroll-locking. |
+
 
 ### Event Handling
 
-| Option                | Type | Default | Description |
-|-----------------------|------|---------|-------------|
-| eventMode             | string | 'click'`| Default event used for toggling the menu. Can be set to `click` or `mouseover`. |
+| Option | Type | Default | Description |
+|--------|------|-------------|
+| `eventMode` | `string` | `'click'` | Default event used for toggling the menu. Can be set to `click` or `mouseover`. |
 
 
 ## Special: blur/gray effect for background
@@ -280,7 +280,6 @@ These are automatically detected:
 | **menu** | The menu element referenced via `aria-controls`. |
 | **menuWrap** | Closest parent using `menuWrapClass`. |
 | **toggleElement** | The trigger element passed to the constructor. |
-
 
 # Slide-Navigation
 
@@ -850,3 +849,118 @@ HTML:
     </div>
 </section>
 ```
+# JS: Image Parallax
+A lightweight helper class for vertical image parallax effects inside a fixed visible viewport.
+
+The class calculates the visible height of the parallax container, enlarges the image dynamically in pixels,
+and applies a vertical `translate3d()` transform while the user scrolls.
+
+This makes the component especially useful when percentage-based heights are not sufficient,
+because the additional image height required for the parallax movement is calculated in JavaScript.
+
+## Usage
+Import and initialize the class for each parallax container:
+
+```js
+import { ImageParallax } from '@madj2k/fe-frontend-kit/tools/image-parallax';
+
+document.querySelectorAll('.js-image-parallax').forEach((el) => {
+  new ImageParallax(el, 'img', {
+    maxShift: '10%',
+    speed: 0.5,
+    activeClass: 'is-parallax-active'
+  });
+});
+```
+
+## Required HTML structure
+The visible viewport and the moving image must be separated.
+
+- The outer container is the parallax scroll container.
+- The `picture` element defines the visible viewport height.
+- The `img` element is enlarged by JavaScript so it has enough vertical space for the movement.
+
+```html
+<figure class="image-parallax js-image-parallax">
+    <picture class="image-parallax-picture">
+        <source srcset="example.webp" type="image/webp">
+        <img src="example.jpg" alt="Example image">
+    </picture>
+</figure>
+```
+
+## HTML requirements
+The markup should follow these rules:
+
+1. The parallax instance is initialized on the outer wrapper element.
+2. The wrapper must have a defined visible height, either by content flow, aspect-ratio or explicit CSS.
+3. The `picture` element should match the visible viewport height exactly.
+4. The `img` element may become higher than the `picture` element, because it provides the movement reserve.
+5. The wrapper or `picture` element must hide overflow so only the visible viewport is shown.
+
+## Recommended CSS
+```scss
+.image-parallax {
+    overflow: hidden;
+}
+
+.image-parallax-picture {
+    display: block;
+    overflow: hidden;
+    height: 100%;
+}
+
+.image-parallax img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+    will-change: transform;
+}
+```
+
+## How sizing works
+The component distinguishes between:
+
+- **Displayed height**: the visible height of the parallax viewport
+- **Image height**: the actual rendered height of the image element used for movement
+
+Typical setup:
+
+- `picture` height = displayed height
+- `img` height = displayed height + upward reserve + downward reserve
+
+Example:
+
+- visible height: `300px`
+- parallax range: `30px`
+
+Result:
+
+- `picture.style.height = '300px'`
+- `img.style.height = '360px'`
+
+This gives the image enough room to move `30px` upward and `30px` downward without producing white space.
+
+## Options Reference
+
+### Behavior
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `maxShift` | `number \| string` | `'30%'` | Maximum movement range. Accepts pixels as number or percentage string such as `'10%'`. Percentage values are based on the displayed viewport height. |
+| `speed` | `number` | `0.5` | Multiplier for the actual movement applied during scrolling. |
+| `activeClass` | `string` | `'is-parallax-active'` | Added to the container once the effect is initialized and updated. |
+
+### Constructor parameters
+
+| Parameter | Type | Default | Description |
+|----------|------|---------|-------------|
+| `container` | `HTMLElement` | required | Outer parallax wrapper element. |
+| `imgSelector` | `string` | `'img'` | Selector used to find the image inside the container. |
+| `options` | `object` | `{}` | Optional configuration object. |
+
+## Notes
+- The visible viewport height should be controlled by layout or CSS, not by the image's natural file dimensions.
+- Percentage-based `maxShift` values are resolved against the displayed height, not against the original image file size.
+- For best visual results, use images with enough cropping reserve for vertical movement.
+- If you use a `picture` element, keep its height fixed to the visible viewport while the image itself is oversized by JavaScript.
