@@ -28,7 +28,7 @@
 /// @author Steffen Kroggel <developer@steffenkroggel>
 /// @license GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.en.html
 ///
-@mixin accessibility-outline($color: var(--bs-primary), $width: 3px, $selector: null) {
+@mixin accessibility-outline($color: var(--bs-primary), $width: 3px, $selector: null, $offset: 0) {
 
     // remove outline
     &:focus,
@@ -42,6 +42,7 @@
         &:has(input:focus-visible),
         &:focus-visible {
             outline: rem-calc($width) solid $color;
+            outline-offset: rem-calc($offset);
         }
     }
     @else {
@@ -54,15 +55,17 @@
             &:has(input:focus-visible)#{$selector},
             &:focus-visible#{$selector} {
                 outline: rem-calc($width) solid $color;
+                outline-offset: rem-calc($offset);
             }
         }
 
-        // if we have normal selector
-        // we can just add the selector
+            // if we have normal selector
+            // we can just add the selector
         @else {
             &:has(input:focus-visible) #{$selector},
             &:focus-visible #{$selector} {
                 outline: rem-calc($width) solid $color;
+                outline-offset: rem-calc($offset);
             }
         }
     }
