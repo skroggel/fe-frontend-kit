@@ -742,6 +742,10 @@ Usage with Appear-On-Scroll (HTML):
   <p>This will fade and move in when scrolled into view.</p>
 </div>
 ```
+NOTE: In order to make your website work without JS, it's recommended to add the following class to your body-tag as default
+```
+<body class="no-js">
+```
 
 # JS: Element In Viewport
 A lightweight helper class that adds a configurable class to any DOM element once it becomes visible in the viewport.

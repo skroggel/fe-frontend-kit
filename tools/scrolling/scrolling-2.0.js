@@ -84,6 +84,7 @@
 
 class Madj2kScrolling {
   config = {
+    noJsBodyClass: 'no-js',
     anchorScrolling: {
       enabled: true,
       selector: ['a[href^="#"]', 'a[href*="#"]'],
@@ -147,11 +148,13 @@ class Madj2kScrolling {
       }
     };
 
+    
     this.lastScrollTop = window.scrollY;
     this.lastContentHeight = document.documentElement.scrollHeight;
+    document.body.classList.remove(this.config.noJsBodyClass);
 
     this._log('Initialized with config:', this.config);
-
+    
     if (this.config.anchorScrolling.enabled) {
       this.initAnchorScrolling();
     }
