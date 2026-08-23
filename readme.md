@@ -375,7 +375,7 @@ navigation markup for search engines.
 <template class="js-slide-nav-tmpl" data-type="menuWrap">
     <div class="slide-nav-container js-slide-nav-container">
         <div class="slide-nav-card js-slide-nav-card %levelClass%" id="slide-card-%uid%">
-            <div class="slide-nav-inner">
+            <div class="slide-nav-inner" tabindex="-1">
                 <ul class="slide-nav-list">
                     %menuItems%
                 </ul>
@@ -435,7 +435,7 @@ navigation markup for search engines.
 
     <div class="slide-nav-card js-slide-nav-card %activeClass% %levelClass%"
          id="slide-card-%uid%">
-        <div class="slide-nav-inner">
+        <div class="slide-nav-inner" tabindex="-1">
             <ul class="slide-nav-list">
                 <li class="slide-nav-item-back" role="none">>
                     <button class="slide-nav-back js-slide-nav-back"

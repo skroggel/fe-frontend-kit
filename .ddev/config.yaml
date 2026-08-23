@@ -4,7 +4,9 @@ nodejs_version: "22.15.1"
 router_http_port: "8080"
 router_https_port: "8443"
 use_dns_when_possible: true
-
+database:
+  type: mariadb
+  version: "10.11"
 
 # Key features of DDEV's config.yaml:
 

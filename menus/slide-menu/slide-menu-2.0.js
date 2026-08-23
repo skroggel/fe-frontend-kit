@@ -7,7 +7,7 @@
  *
  * @author Steffen Kroggel <developer@steffenkroggel.de>
  * @copyright 2025 Steffen Kroggel
- * @version 2.0.0
+ * @version 2.0.1
  * @license GNU General Public License v3.0
  *
  * @example:
@@ -102,6 +102,17 @@ class Madj2kSlideMenu {
     this.settings.$cards = [];
     this.settings.$activeCards = [];
     this.settings.$openCard = null;
+
+    // check for keyboard interaction
+    this.isKeyboardInteraction = false;
+
+    document.addEventListener('keydown', () => {
+      this.isKeyboardInteraction = true;
+    });
+
+    document.addEventListener('pointerdown', () => {
+      this.isKeyboardInteraction = false;
+    });
 
     // bind persistent handlers
     this.toggleEvent = this.toggleEvent.bind(this);
@@ -210,7 +221,6 @@ class Madj2kSlideMenu {
       .querySelectorAll(`.${this.settings.nextCardToggleClass}`)
       .forEach(el => {
         el.addEventListener('click', this.nextCardEvent);
-        el.addEventListener('keydown', this.keyboardEvent);
       });
 
     this.settings.$menu
@@ -369,19 +379,127 @@ class Madj2kSlideMenu {
   keyboardEvent(e) {
 
     const element = e.target;
+    if (element === this.$element) {
+
+      switch (e.key) {
+
+        case 'ArrowDown':
+          e.preventDefault();
+
+          if (
+            !this.settings.$menu.classList.contains(
+              this.settings.openStatusClass
+            )
+          ) {
+            this.open();
+          } else {
+            this.focusFirstItemOfOpenCard();
+          }
+
+          return;
+
+        case 'ArrowUp':
+          e.preventDefault();
+
+          if (
+            this.settings.$menu.classList.contains(
+              this.settings.openStatusClass
+            )
+          ) {
+            this.close();
+          }
+
+          return;
+
+        case 'Escape':
+          e.preventDefault();
+          this.close();
+          this.focusToggle();
+          return;
+      }
+    }
+
+    if (!this.settings.$openCard) {
+      return;
+    }
+
+    const focusables = Array.from(
+      this.settings.$openCard.querySelectorAll(
+        'a:not([tabindex="-1"]), button:not([tabindex="-1"]), input:not([tabindex="-1"]), textarea:not([tabindex="-1"]), select:not([tabindex="-1"])'
+      )
+    ).filter(el =>
+      el.closest(`.${this.settings.menuCardClass}`) ===
+      this.settings.$openCard
+    );
+
+    if (!focusables.length) {
+      return;
+    }
+
+    const currentIndex = focusables.indexOf(element);
 
     switch (e.key) {
 
-      case 'ArrowUp':
-        if (element === this.$element) this.close();
-        break;
+      case 'ArrowDown': {
+        e.preventDefault();
 
-      case 'ArrowDown':
-        if (element === this.$element) {
-          e.preventDefault();
-          this.open();
+        if (currentIndex === -1) {
+          focusables[0].focus();
+          return;
         }
+
+        const nextIndex =
+          currentIndex < focusables.length - 1
+            ? currentIndex + 1
+            : 0;
+
+        focusables[nextIndex].focus();
         break;
+      }
+
+      case 'ArrowUp': {
+        e.preventDefault();
+
+        if (currentIndex === -1) {
+          focusables[focusables.length - 1].focus();
+          return;
+        }
+
+        const previousIndex =
+          currentIndex > 0
+            ? currentIndex - 1
+            : focusables.length - 1;
+
+        focusables[previousIndex].focus();
+        break;
+      }
+
+      case 'ArrowRight': {
+        if (
+          element.classList.contains(
+            this.settings.nextCardToggleClass
+          )
+        ) {
+          e.preventDefault();
+          this.nextCardEvent(e);
+        }
+
+        break;
+      }
+
+      case 'ArrowLeft': {
+        const backButton =
+          this.settings.$openCard.querySelector(
+            `.${this.settings.lastCardToggleClass}`
+          );
+
+        if (backButton) {
+          e.preventDefault();
+          backButton.click();
+        }
+
+        break;
+      }
 
       case 'Escape':
         e.preventDefault();
@@ -389,31 +507,27 @@ class Madj2kSlideMenu {
         this.focusToggle();
         break;
 
-      case 'Tab':
-        if (!this.settings.$openCard) break;
-
-        const focusables = Array.from(
-          this.settings.$openCard.querySelectorAll(
-            'a:not([tabindex="-1"]), button:not([tabindex="-1"]), input:not([tabindex="-1"]), textarea:not([tabindex="-1"]), select:not([tabindex="-1"])'
-          )
-        ).filter(el =>
-          el.closest(`.${this.settings.menuCardClass}`) === this.settings.$openCard
-        );
-
-        if (!focusables.length) break;
-
+      case 'Tab': {
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
 
-        if (e.shiftKey && document.activeElement === first) {
+        if (
+          e.shiftKey &&
+          document.activeElement === first
+        ) {
           e.preventDefault();
           last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
+
+        } else if (
+          !e.shiftKey &&
+          document.activeElement === last
+        ) {
           e.preventDefault();
           first.focus();
         }
 
         break;
+      }
     }
   }
 
@@ -519,6 +633,9 @@ class Madj2kSlideMenu {
    * @return {void} Does not return any value.
    */
   focusFirstItemOfOpenCard(timeout = 0) {
+    if (!this.isKeyboardInteraction) {
+      return;
+    }
     const el = this.settings.$openCard?.querySelector(
       'a:not([tabindex]),button:not([tabindex]),input:not([tabindex]),textarea:not([tabindex]),select:not([tabindex])'
     );
